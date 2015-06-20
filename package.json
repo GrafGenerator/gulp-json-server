@@ -1,9 +1,9 @@
 {
-  "name": "gulp-json-srv",
+  "name": "gulp-json-server",
   "version": "0.0.0",
-  "description": "Wrapper around json-server for easy json-servr launching",
+  "description": "Wrapper around json-server for easy json-server launching",
   "license": "MIT",
-  "repository": "https://github.com/GrafGenerator/gulp-json-srv.git",
+  "repository": "https://github.com/GrafGenerator/gulp-json-server.git",
   "author": {
     "name": "Nikita Ivanov",
     "email": "grafgenerator@gmail.com"
