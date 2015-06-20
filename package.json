@@ -1,0 +1,34 @@
+{
+  "name": "gulp-json-srv",
+  "version": "0.0.0",
+  "description": "Wrapper around json-server for easy json-servr launching",
+  "license": "MIT",
+  "repository": "https://github.com/GrafGenerator/gulp-json-srv.git",
+  "author": {
+    "name": "Nikita Ivanov",
+    "email": "grafgenerator@gmail.com"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "files": [
+    "index.js"
+  ],
+  "keywords": [
+    "gulpplugin",
+	"json-server",
+	"json",
+	"fake",
+	"testing",
+	"mocking"
+  ],
+  "dependencies": {
+    "gulp-util": "^3.0.4",
+  },
+  "devDependencies": {
+    "mocha": "*"
+  }
+}
