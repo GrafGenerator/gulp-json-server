@@ -19,14 +19,16 @@
   ],
   "keywords": [
     "gulpplugin",
-	"json-server",
-	"json",
-	"fake",
-	"testing",
-	"mocking"
+    "json-server",
+    "json",
+    "fake",
+    "testing",
+    "mocking"
   ],
   "dependencies": {
     "gulp-util": "^3.0.4",
+    "json-server": "^0.7.19",
+    "lodash": "^3.9.3"
   },
   "devDependencies": {
     "mocha": "*"
