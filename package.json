@@ -1,5 +1,5 @@
 {
-  "name": "gulp-json-server",
+  "name": "gulp-json-servr",
   "version": "0.0.0",
   "description": "Wrapper around json-server for easy json-server launching",
   "license": "MIT",
