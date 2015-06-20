@@ -1,31 +1,32 @@
 'use strict';
 var gutil = require('gulp-util');
-var through = require('through2');
-var someModule = require('some-module');
+var _ = require('lodash');
 
-module.exports = function (options) {
-	if (!options.foo) {
-		throw new gutil.PluginError('gulp-<%= pluginName %>', '`foo` required');
-	}
+const PLUGIN_NAME = "gulp-json-server";
 
-	return through.obj(function (file, enc, cb) {
-		if (file.isNull()) {
-			cb(null, file);
-			return;
-		}
+var gulpServerStart = function (options) {
+	/*if (typeof(dataSource) === "undefined") {
+		throw new gutil.PluginError(PLUGIN_NAME, 'Data source required to start the server');
+	}*/
 
-		if (file.isStream()) {
-			cb(new gutil.PluginError('gulp-<%= pluginName %>', 'Streaming not supported'));
-			return;
-		}
+	var serverOptions = {
+		data: 'db.json'
+		port: 3000
+	};
+	
+	_.assign(serverOptions, options || {});
+	
+	var jsonServer = require('json-server');
+	var server = jsonServer.create();
 
-		try {
-			file.contents = new Buffer(someModule(file.contents.toString(), options));
-			this.push(file);
-		} catch (err) {
-			this.emit('error', new gutil.PluginError('gulp-<%= pluginName %>', err));
-		}
+	server.use(jsonServer.defaults);
 
-		cb();
-	});
+	var router = jsonServer.router(serverOptions.data);
+	server.use(router);
+
+	server.listen(serverOptions.port);
+};
+
+module.exports = {
+	start: gulpServerStart
 };

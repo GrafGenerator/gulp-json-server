@@ -1,43 +1,91 @@
-# gulp-<%= pluginName %> [![Build Status](https://travis-ci.org/<%= githubUsername %>/gulp-<%= pluginName %>.svg?branch=master)](https://travis-ci.org/<%= githubUsername %>/gulp-<%= pluginName %>)
+# gulp-json-server [![Build Status](https://travis-ci.org/GrafGenerator/gulp-json-server.svg?branch=develop)](https://travis-ci.org/GrafGenerator/gulp-json-server)
 
-> My <%= superb %> gulp plugin
+Wrapper for [json-server](https://github.com/typicode/json-server).
 
 
 ## Install
 
 ```
-$ npm install --save-dev gulp-<%= pluginName %>
+$ npm install --save-dev gulp-json-server
 ```
 
 
 ## Usage
-
+### Server with default parameters
 ```js
 var gulp = require('gulp');
-var <%= camelPluginName %> = require('gulp-<%= pluginName %>');
+var jsonServer = require('gulp-json-server');
 
 gulp.task('default', function () {
-	return gulp.src('src/file.ext')
-		.pipe(<%= camelPluginName %>())
-		.pipe(gulp.dest('dist'));
+	jsonServer.start(); // start serving 'db.json' on port 3000
 });
 ```
 
+### Server with custom parameters
+```js
+var gulp = require('gulp');
+var jsonServer = require('gulp-json-server');
+
+gulp.task('default', function () {
+	jsonServer.start({
+		data: 'some-else-data-file.json',
+		port: 25000
+	});
+});
+```
+
+### Server with in-memory DB
+```js
+var gulp = require('gulp');
+var jsonServer = require('gulp-json-server');
+
+var db = {
+	users: [
+		{id: 0, name: "user0"},
+		{id: 1, name: "user1"},
+		{id: 2, name: "user2"}
+	],
+	posts: [
+		{id: 0, title: "title 1", author_id: 0},
+		{id: 1, title: "title 2", author_id: 2},
+		{id: 2, title: "title 3", author_id: 0}
+	],
+	likes: [
+		{id: 0, post_id: 0, user_id: 2},
+		{id: 0, post_id: 0, user_id: 1},
+		{id: 0, post_id: 2, user_id: 2},
+		{id: 0, post_id: 1, user_id: 0}
+	]
+};
+
+gulp.task('default', function () {
+	jsonServer.start({
+		data: db
+	});
+});
+```
 
 ## API
 
-### <%= camelPluginName %>(options)
+### jsonServer.start(options)
 
 #### options
 
-##### foo
+##### data
 
-Type: `boolean`  
-Default: `false`
+Type: `string` or `object`<br/>
+Default: `'db.json'`
 
-Lorem ipsum.
+Input source for server's DB. May be either a path to the file or in-memory object.
+
+##### port
+
+Type: `integer`<br/>
+Default: `3000`
+
+Port number on which json-server will listen.
 
 
 ## License
 
-MIT © [<%= name %>](<%= website %>)
+MIT © Nikita Ivanov (http://borodatik.net)
