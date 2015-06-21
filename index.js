@@ -17,7 +17,7 @@ var gulpServerStart = function (options) {
 	var router = jsonServer.router(serverOptions.data);
 	server.use(router);
 
-	server.listen(serverOptions.port);
+	return server.listen(serverOptions.port);
 };
 
 module.exports = {
