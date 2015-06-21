@@ -6,7 +6,7 @@ Wrapper for [json-server](https://github.com/typicode/json-server).
 ## Install
 
 ```
-$ npm install --save-dev gulp-json-server
+$ npm install --save-dev gulp-json-servr
 ```
 
 
