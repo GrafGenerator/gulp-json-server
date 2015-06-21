@@ -1,7 +1,7 @@
 {
-  "name": "gulp-json-servr",
-  "version": "0.0.0",
-  "description": "Wrapper around json-server for easy json-server launching",
+  "name": "gulp-json-srv",
+  "version": "0.0.3",
+  "description": "Wrapper around json-server for easy json-server launching with Gulp",
   "license": "MIT",
   "repository": "https://github.com/GrafGenerator/gulp-json-server.git",
   "author": {
@@ -12,7 +12,8 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "mocha"
+    "jshint": "gulp jshint",
+    "test": "gulp test"
   },
   "files": [
     "index.js"
@@ -22,8 +23,13 @@
     "json-server",
     "json",
     "fake",
+    "test",
     "testing",
-    "mocking"
+    "mock",
+    "mocking",
+    "REST",
+    "API",
+    "server"
   ],
   "dependencies": {
     "gulp-util": "^3.0.4",
@@ -31,6 +37,10 @@
     "lodash": "^3.9.3"
   },
   "devDependencies": {
-    "mocha": "*"
+    "gulp": "^3.9.0",
+    "gulp-jshint": "^1.11.0",
+    "gulp-mocha": "^2.1.2",
+    "jshint-stylish": "^2.0.1",
+    "supertest": "^1.0.1"
   }
 }
