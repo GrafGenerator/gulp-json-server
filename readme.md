@@ -6,7 +6,7 @@ Wrapper for [json-server](https://github.com/typicode/json-server).
 ## Install
 
 ```
-$ npm install --save-dev gulp-json-servr
+$ npm install --save-dev gulp-json-srv
 ```
 
 
@@ -14,7 +14,7 @@ $ npm install --save-dev gulp-json-servr
 ### Server with default parameters
 ```js
 var gulp = require('gulp');
-var jsonServer = require('gulp-json-servr');
+var jsonServer = require('gulp-json-srv');
 
 gulp.task('default', function () {
 	jsonServer.start(); // start serving 'db.json' on port 3000
@@ -24,7 +24,7 @@ gulp.task('default', function () {
 ### Server with custom parameters
 ```js
 var gulp = require('gulp');
-var jsonServer = require('gulp-json-servr');
+var jsonServer = require('gulp-json-srv');
 
 gulp.task('default', function () {
 	jsonServer.start({
@@ -37,7 +37,7 @@ gulp.task('default', function () {
 ### Server with in-memory DB
 ```js
 var gulp = require('gulp');
-var jsonServer = require('gulp-json-servr');
+var jsonServer = require('gulp-json-srv');
 
 var db = {
 	users: [
