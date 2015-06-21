@@ -1,6 +1,6 @@
 {
   "name": "gulp-json-srv",
-  "version": "0.0.0",
+  "version": "0.0.3",
   "description": "Wrapper around json-server for easy json-server launching with Gulp",
   "license": "MIT",
   "repository": "https://github.com/GrafGenerator/gulp-json-server.git",
@@ -23,10 +23,13 @@
     "json-server",
     "json",
     "fake",
+    "test",
     "testing",
+    "mock",
     "mocking",
     "REST",
-    "API"
+    "API",
+    "server"
   ],
   "dependencies": {
     "gulp-util": "^3.0.4",
