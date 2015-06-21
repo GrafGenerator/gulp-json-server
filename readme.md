@@ -14,7 +14,7 @@ $ npm install --save-dev gulp-json-server
 ### Server with default parameters
 ```js
 var gulp = require('gulp');
-var jsonServer = require('gulp-json-server');
+var jsonServer = require('gulp-json-servr');
 
 gulp.task('default', function () {
 	jsonServer.start(); // start serving 'db.json' on port 3000
@@ -24,7 +24,7 @@ gulp.task('default', function () {
 ### Server with custom parameters
 ```js
 var gulp = require('gulp');
-var jsonServer = require('gulp-json-server');
+var jsonServer = require('gulp-json-servr');
 
 gulp.task('default', function () {
 	jsonServer.start({
@@ -37,7 +37,7 @@ gulp.task('default', function () {
 ### Server with in-memory DB
 ```js
 var gulp = require('gulp');
-var jsonServer = require('gulp-json-server');
+var jsonServer = require('gulp-json-servr');
 
 var db = {
 	users: [
