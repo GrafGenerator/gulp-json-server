@@ -12,7 +12,8 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "mocha"
+    "jshint": "gulp jshint",
+    "test": "gulp test"
   },
   "files": [
     "index.js"
@@ -23,7 +24,9 @@
     "json",
     "fake",
     "testing",
-    "mocking"
+    "mocking",
+    "REST",
+    "API"
   ],
   "dependencies": {
     "gulp-util": "^3.0.4",
@@ -31,6 +34,9 @@
     "lodash": "^3.9.3"
   },
   "devDependencies": {
-    "mocha": "*"
+    "gulp": "^3.9.0",
+    "gulp-jshint": "^1.11.0",
+    "gulp-mocha": "^2.1.2",
+    "jshint-stylish": "^2.0.1"
   }
 }
