@@ -1,7 +1,7 @@
 {
   "name": "gulp-json-srv",
-  "version": "0.0.3",
-  "description": "Wrapper around json-server for easy json-server launching with Gulp",
+  "version": "0.0.4",
+  "description": "Wrapper for json-server for easy launching with Gulp",
   "license": "MIT",
   "repository": "https://github.com/GrafGenerator/gulp-json-server.git",
   "author": {
@@ -23,6 +23,7 @@
     "json-server",
     "json",
     "fake",
+    "prototyping",
     "test",
     "testing",
     "mock",
