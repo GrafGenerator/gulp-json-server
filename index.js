@@ -4,7 +4,9 @@ var _ = require('lodash');
 var gulpServerStart = function (options) {
 	var serverOptions = {
 		data: 'db.json',
-		port: 3000
+		port: 3000,
+		rewriteRules: null,
+		baseUrl: null
 	};
 
 	_.assign(serverOptions, options || {});
@@ -14,8 +16,17 @@ var gulpServerStart = function (options) {
 
 	server.use(jsonServer.defaults);
 
+	if(serverOptions.rewriteRules){
+		server.use(jsonServer.rewriter(serverOptions.rewriteRules));
+	}
+	
 	var router = jsonServer.router(serverOptions.data);
-	server.use(router);
+	if(serverOptions.baseUrl) {
+		server.use(serverOptions.baseUrl, router);
+	}
+	else{
+		server.use(router);
+	}
 
 	return server.listen(serverOptions.port);
 };

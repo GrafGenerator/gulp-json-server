@@ -8,6 +8,11 @@ describe('Server', function(){
 		comments: [{ id: 1, body: "some comment", postId: 1 }]
 	};
 	
+	var routes = {
+	  '/api/': '/',
+	  '/blog/:resource/:id/show': '/:resource/:id'
+	};
+	
 	describe('#start()', function(){
 		var startHelper = function(options, serverUrl, done, assertFn){
 			var server = jsonServer.start(options);
@@ -28,6 +33,7 @@ describe('Server', function(){
 					.expect(200, null);
 			});
 		});
+		
 		it('should start server from specific file on specific port', function(done){
 			startHelper({ data: 'test/db.json', port: 3001}, 'http://localhost:3001', done, function(request){
 				return request.get('/comments')
@@ -35,6 +41,7 @@ describe('Server', function(){
 					.expect(200, null);
 			});
 		});
+
 		it('should start server in memory db', function(done){
 			startHelper({ data: db }, null, done, function(request){
 				return request.get('/db')
@@ -42,10 +49,34 @@ describe('Server', function(){
 					.expect(200, null);
 			});
 		});
+		
 		it('should return 404 when json file not exist', function(done){
 			startHelper({ data: 'test/db1.json' }, null, done, function(request){
 				return request.get('/posts')
 					.expect(404, null);
+			});
+		});
+		
+		it('should be able to change base API URL', function(done){
+			startHelper({ data: db, baseUrl: '/api' }, null, done, function(request){
+				return request.get('/api/db')
+					.expect(db)
+					.expect(200, null);
+			});
+		});
+		
+		it('should not be available on root after changing base API URL', function(done){
+			startHelper({ data: db, baseUrl: '/api' }, null, done, function(request){
+				return request.get('/db')
+					.expect(404, null);
+			});
+		});
+		
+		it('should be able to use rewrite rules', function(done){
+			startHelper({ data: db, rewriteRules: routes }, null, done, function(request){
+				return request.get('/blog/posts/1/show')
+					.expect(db.posts[0])
+					.expect(200, null);
 			});
 		});
 	});
