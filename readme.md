@@ -29,7 +29,8 @@ var jsonServer = require('gulp-json-srv');
 gulp.task('default', function () {
 	jsonServer.start({
 		data: 'some-else-data-file.json',
-		port: 25000
+		port: 25000,
+		id:   '_id'
 	});
 });
 ```
@@ -126,6 +127,13 @@ Type: `object`<br/>
 Default: `null`
 
 A key-value pairs of rewrite rules that should be applied to server.
+
+##### id
+
+Type: `string`<br/>
+Default: `id`
+
+your id keyword. usually `id` but for exemple mongodb use `_id`
 
 
 ## License
