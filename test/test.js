@@ -83,7 +83,15 @@ describe('Server', function(){
 		
 		it('should be get a post with mongodb\'s _id' , function(done){
 			startHelper({ data: db, id: '_id' }, null, done, function(request){
-				return request.get('/blog/mongopost/1/show')
+				return request.get('/mongopost/1')
+					.expect(db.mongopost[0])
+					.expect(200, null);
+			});
+		});
+		
+		it('should return 404 for mongopost if default id option' , function(done){
+			startHelper({ data: db }, null, done, function(request){
+				return request.get('/mongopost/1')
 					.expect(db.mongopost[0])
 					.expect(200, null);
 			});
