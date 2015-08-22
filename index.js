@@ -6,7 +6,8 @@ var gulpServerStart = function (options) {
 		data: 'db.json',
 		port: 3000,
 		rewriteRules: null,
-		baseUrl: null
+		baseUrl: null,
+		id:'_id'
 	};
 
 	_.assign(serverOptions, options || {});
@@ -27,6 +28,9 @@ var gulpServerStart = function (options) {
 	else{
 		server.use(router);
 	}
+	
+	if(serverOptions.id)
+		router.db._.id = serverOptions.id;
 
 	return server.listen(serverOptions.port);
 };
