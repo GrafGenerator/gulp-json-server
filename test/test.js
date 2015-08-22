@@ -92,8 +92,7 @@ describe('Server', function(){
 		it('should return 404 for mongopost if default id option' , function(done){
 			startHelper({ data: db }, null, done, function(request){
 				return request.get('/mongopost/1')
-					.expect(db.mongopost[0])
-					.expect(200, null);
+					.expect(404, null);
 			});
 		});
 	});
