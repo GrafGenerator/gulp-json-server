@@ -12,12 +12,5 @@
       "body": "some comment",
       "postId": 1
     }
-  ],
-  "mongopost": [
-    {
-      "_id": 1,
-      "title": "json-server",
-      "author": "typicode"
-    }
   ]
 }
