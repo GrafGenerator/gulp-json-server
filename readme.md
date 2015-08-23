@@ -29,7 +29,13 @@ var jsonServer = require('gulp-json-srv');
 gulp.task('default', function () {
 	jsonServer.start({
 		data: 'some-else-data-file.json',
-		port: 25000
+		port: 25000,
+		id:   '_id',
+		baseUrl: '/api', // change base URl from / to /api
+		rewriteRules: {
+			'/': '/api/',
+			'/blog/:resource/:id/show': '/api/:resource/:id'
+		}
 	});
 });
 ```
@@ -42,19 +48,9 @@ var jsonServer = require('gulp-json-srv');
 var db = {
 	users: [
 		{id: 0, name: "user0"},
-		{id: 1, name: "user1"},
-		{id: 2, name: "user2"}
 	],
 	posts: [
 		{id: 0, title: "title 1", author_id: 0},
-		{id: 1, title: "title 2", author_id: 2},
-		{id: 2, title: "title 3", author_id: 0}
-	],
-	likes: [
-		{id: 0, post_id: 0, user_id: 2},
-		{id: 0, post_id: 0, user_id: 1},
-		{id: 0, post_id: 2, user_id: 2},
-		{id: 0, post_id: 1, user_id: 0}
 	]
 };
 
@@ -65,32 +61,6 @@ gulp.task('default', function () {
 });
 ```
 
-### Server with changed REST API URL
-```js
-var gulp = require('gulp');
-var jsonServer = require('gulp-json-srv');
-
-gulp.task('default', function () {
-	jsonServer.start({
-		baseUrl: '/api' // change base URl from / to /api
-	});
-});
-```
-
-### Server with rewrite rules
-```js
-var gulp = require('gulp');
-var jsonServer = require('gulp-json-srv');
-
-gulp.task('default', function () {
-	jsonServer.start({
-		rewriteRules: {
-			'/api/': '/',
-			'/blog/:resource/:id/show': '/:resource/:id'
-		}
-	});
-});
-```
 
 ## API
 
@@ -126,6 +96,24 @@ Type: `object`<br/>
 Default: `null`
 
 A key-value pairs of rewrite rules that should be applied to server.
+
+##### id
+
+Type: `string`<br/>
+Default: `id`
+
+`id` key used to match objects in collections. Usually `id`, but for example MongoDB use `_id`.
+
+## Release notes
+### v0.0.5
+* The `id` key, used to match objects in collections now could be changed using `id` parameter in options. Useful to simulate other DBs, for example MongoDB's `_id`.
+
+### v0.0.4
+* Added ability to change server's base URL.
+* Added ability to use rewrite rules.
+
+### v0.0.0 - v0.0.3
+Basic version of plugin with ability to start json-server from specified file or object, on specific port.
 
 
 ## License
