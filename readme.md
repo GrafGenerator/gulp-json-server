@@ -102,7 +102,18 @@ A key-value pairs of rewrite rules that should be applied to server.
 Type: `string`<br/>
 Default: `id`
 
-your id keyword. usually `id` but for exemple mongodb use `_id`
+`id` key used to match objects in collections. Usually `id`, but for example MongoDB use `_id`.
+
+## Release notes
+### v0.0.5
+* The `id` key, used to match objects in collections now could be changed using `id` parameter in options. Useful to simulate other DBs, for example MongoDB's `_id`.
+
+### v0.0.4
+* Added ability to change server's base URL.
+* Added ability to use rewrite rules.
+
+### v0.0.0 - v0.0.3
+Basic version of plugin with ability to start json-server from specified file or object, on specific port.
 
 
 ## License
