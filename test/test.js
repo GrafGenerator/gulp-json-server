@@ -5,7 +5,8 @@ var jsonServer = require('../');
 describe('Server', function(){
 	var db = {
 		posts: [{ id: 1, title: "json-server", author: "typicode" }],
-		comments: [{ id: 1, body: "some comment", postId: 1 }]
+		comments: [{ id: 1, body: "some comment", postId: 1 }],
+		mongopost: [{ _id: 1, title: "json-server", author: "typicode" }]
 	};
 	
 	var routes = {
@@ -77,6 +78,21 @@ describe('Server', function(){
 				return request.get('/blog/posts/1/show')
 					.expect(db.posts[0])
 					.expect(200, null);
+			});
+		});
+		
+		it('should get a post with mongodb\'s _id' , function(done){
+			startHelper({ data: db, id: '_id' }, null, done, function(request){
+				return request.get('/mongopost/1')
+					.expect(db.mongopost[0])
+					.expect(200, null);
+			});
+		});
+		
+		it('should return 404 for mongopost if default id option' , function(done){
+			startHelper({ data: db }, null, done, function(request){
+				return request.get('/mongopost/1')
+					.expect(404, null);
 			});
 		});
 	});
