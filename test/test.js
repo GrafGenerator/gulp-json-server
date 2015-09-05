@@ -135,7 +135,7 @@ describe('Server', function(){
 
 
 		/* ===== reload testing ===== */
-		it('should reload default file when no arguments passed to reload method and server serving file', function(done){
+		it('should reload default file when no arguments passed to reload method while serving file', function(done){
 			startHelper({}, null, done, [
 					function(request){
 						return request.get('/posts/1')
@@ -155,7 +155,7 @@ describe('Server', function(){
 			);
 		});
 
-		it('should leave in-memory DB as is when no arguments passed reload method and server serving in-memory DB', function(done){
+		it('should leave in-memory DB as is when no arguments passed reload method', function(done){
 			startHelper({ data: db }, null, done, [
 					function(request){
 						return request.get('/posts/1')
@@ -171,7 +171,7 @@ describe('Server', function(){
 			);
 		});
 
-		it('should reload specified file when it passed to reload method and server serving file', function(done){
+		it('should reload specified file when it passed to reload method while serving file', function(done){
 			startHelper({}, null, done, [
 					function(request){
 						return request.get('/posts/1')
@@ -187,7 +187,7 @@ describe('Server', function(){
 			);
 		});
 
-		it('should reload specified file when it passed to reload method and server serving in-memory DB', function(done){
+		it('should reload specified file when it passed to reload method while serving in-memory DB', function(done){
 			startHelper({ data: db }, null, done, [
 					function(request){
 						return request.get('/posts/1')
@@ -210,9 +210,7 @@ describe('Server', function(){
 							.expect(200, dbJsonPost1);
 					},
 					function(request, server){
-						var newDb = db;
-						newDb.posts[0] = dbJsonPost1Changed;
-
+						var newDb = { posts: [dbJsonPost1Changed]};
 						server.reload(newDb);
 
 						return request.get('/posts/1')
@@ -222,5 +220,20 @@ describe('Server', function(){
 			);
 		});
 
+		it('should reload in-memory DB when original DB object modified', function(done){
+			startHelper({ data: db }, null, done, [
+					function(request){
+						return request.get('/posts/1')
+							.expect(200, dbJsonPost1);
+					},
+					function(request, server){
+						db.posts[0] = dbJsonPost1Changed;
+
+						return request.get('/posts/1')
+							.expect(200, dbJsonPost1Changed);
+					}
+				]
+			);
+		});
 	});
 });
