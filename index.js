@@ -1,40 +1,71 @@
 'use strict';
 var _ = require('lodash');
+var jsonServer = require('json-server');
 
-var gulpServerStart = function (options) {
-	var serverOptions = {
+var GulpJsonServer = function(options){
+	this.server = null;
+	this.instance = null;
+	this.router = null;
+	this.serverStarted = false;
+
+	this.options = {
 		data: 'db.json',
 		port: 3000,
 		rewriteRules: null,
 		baseUrl: null,
-		id:'id'
+		id: 'id',
+		deferredStart: false
+	};
+	_.assign(this.options, options || {});
+
+	this.start = function () {
+		if(this.serverStarted){
+			return this.instance;
+		}
+
+		var server = jsonServer.create();
+		server.use(jsonServer.defaults);
+
+		if(this.options.rewriteRules){
+			server.use(jsonServer.rewriter(this.options.rewriteRules));
+		}
+
+		var router = jsonServer.router(this.options.data);
+		if(this.options.baseUrl) {
+			server.use(this.options.baseUrl, router);
+		}
+		else{
+			server.use(router);
+		}
+
+		if(this.options.id){
+			router.db._.id = this.options.id;
+		}
+
+		this.server = server;
+		this.router = router;
+		this.instance = server.listen(this.options.port);
+		this.serverStarted = true;
+
+		return this.instance;
 	};
 
-	_.assign(serverOptions, options || {});
+	this.kill = function(){
+		if(this.instance === null){
+			throw "JSON server not started";
+		}
+		this.instance.close();
+	};
 
-	var jsonServer = require('json-server');
-	var server = jsonServer.create();
+	this.reload = function(data){
 
-	server.use(jsonServer.defaults);
+	};
 
-	if(serverOptions.rewriteRules){
-		server.use(jsonServer.rewriter(serverOptions.rewriteRules));
+	// ==== Initialization ====
+	if(!this.options.deferredStart){
+		this.start();
 	}
-	
-	var router = jsonServer.router(serverOptions.data);
-	if(serverOptions.baseUrl) {
-		server.use(serverOptions.baseUrl, router);
-	}
-	else{
-		server.use(router);
-	}
-
-	if(serverOptions.id)
-		router.db._.id = serverOptions.id;
-
-	return server.listen(serverOptions.port);
 };
 
-module.exports = {
-	start: gulpServerStart
-};
+
+module.exports = GulpJsonServer;

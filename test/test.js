@@ -16,14 +16,14 @@ describe('Server', function(){
 
 	describe('#start()', function(){
 		var startHelper = function(options, serverUrl, done, assertFn){
-			var server = jsonServer.start(options);
-			var r = request(serverUrl || server);
+			var server = new jsonServer(options || {});
+			var r = request(serverUrl || server.instance);
 
 			var r2 = assertFn(r);
 
 			r2.end(function(err, res){
-				server.close();
-				if(err) return done(err);
+				server.kill();
+				if(err) { return done(err); }
 				done();
 			});
 		};
