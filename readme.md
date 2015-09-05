@@ -35,10 +35,34 @@ gulp.task('default', function () {
 		rewriteRules: {
 			'/': '/api/',
 			'/blog/:resource/:id/show': '/api/:resource/:id'
-		}
+		},
+		deferredStart: true
 	});
 });
 ```
+
+### Server with DB reloading
+```js
+var gulp = require('gulp');
+var jsonServer = require('gulp-json-srv');
+var server = jsonServer.start({
+	data: 'db.json',
+	deferredStart: true;
+});
+
+gulp.task('serverStart', function () {
+	server.start();
+});
+
+gulp.task('watch', function () {
+	gulp.watch(['db.json'], ['serverReload']);
+});
+
+gulp.task('serverReload', function () {
+	server.reload();
+});
+```
+Now run `gulp startServer watch` to run server with file's changes watching.
 
 ### Server with in-memory DB
 ```js
@@ -62,12 +86,15 @@ gulp.task('default', function () {
 ```
 
 
-## API
+## jsonServer API
 
-### jsonServer.start(options)
-Starts the server according to specified options.<br/> Returns the started server instance.
+### start(options)
+Creates new server with specified options and immediately starts it until `deferredStart` option specified.<br/>
 
-#### options
+#### Returns
+Returns a wrapper object for the server (see it's API below).
+
+#### Options
 
 ##### data
 
@@ -104,7 +131,44 @@ Default: `id`
 
 `id` key used to match objects in collections. Usually `id`, but for example MongoDB use `_id`.
 
+##### deferredStart
+
+Type: `bool`<br/>
+Default: `false`
+
+Used to specify that server object should be created, but not started, assuming manual start later.
+
+
+## Server wrapper object API
+
+### start()
+Manually starts server in case of deferred start. Has no effect in case server is already running.
+
+### kill()
+Stops the server.
+
+### reload(data)
+Reloads server DB with new data. The data can be object or data file path, or can be omitted.
+
+#### Options
+
+##### data
+
+Type: `string` or `object`<br/>
+Default: `undefined`
+
+Input source for new DB's content. May be either a path to the file or in-memory object.
+
+If path to file, or object is passed, reloads DB with new data, no matter if serving file or in-memory DB.
+If omitted, do nothing in case of in-memory DB, and reload data from file, specified by server options in case of serving the file.
+
+
 ## Release notes
+### v0.0.6
+* Added reloading functionality. Now DB could be easily reloaded either from file or from object.
+* Added ability to kill the server.
+* Added deferredStart option, allowing to define server instance, but start it later.
+
 ### v0.0.5
 * The `id` key, used to match objects in collections now could be changed using `id` parameter in options. Useful to simulate other DBs, for example MongoDB's `_id`.
 
