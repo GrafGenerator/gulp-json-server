@@ -14,8 +14,7 @@ describe('Server', function(){
 
 	var db = dbSample;
 	var dbJsonPost1 = { id: 1, title: "json-server", author: "typicode" };
-	var dbJsonPost1Changed1 = { id: 1, title: "json-server", author: "grafgenerator" };
-	var dbJsonPost1Changed2 = { id: 1, title: "gulp-json-srv", author: "grafgenerator" };
+	var dbJsonPost1Changed = { id: 1, title: "gulp-json-srv", author: "grafgenerator" };
 
 	var routes = {
 	  '/api/': '/',
@@ -29,7 +28,7 @@ describe('Server', function(){
 		var lastAssert = currentIndex == asserts.length - 1;
 
 		var r = request(url || server.instance);
-		var r2 = assert(r);
+		var r2 = assert(r, server);
 
 		r2.end(function(err, res){
 			if(err) {
@@ -68,6 +67,8 @@ describe('Server', function(){
 			fs.writeFileSync('sample/db.json', fs.readFileSync('test/db.json'));
 			fs.writeFileSync('sample/changed_db.json', fs.readFileSync('test/changed_db.json'));
 		});
+
+
 
 		it('should start server with default options (file "db.json" on port 3000)', function(done){
 			startHelper(null, 'http://localhost:3000', done, function(request){
@@ -131,5 +132,79 @@ describe('Server', function(){
 					.expect(404, {});
 			});
 		});
+
+
+		/* ===== reload testing ===== */
+		it('should reload default file when no arguments passed to reload method and server serving file', function(done){
+			startHelper({}, null, done, [
+					function(request){
+						return request.get('/posts/1')
+							.expect(200, dbJsonPost1);
+					},
+					function(request, server){
+						var dbContent = JSON.parse(fs.readFileSync('db.json'));
+						dbContent.posts[0] = dbJsonPost1Changed;
+						fs.writeFileSync('db.json', dbContent);
+
+						server.reload();
+
+						return request.get('/posts/1')
+							.expect(200, dbJsonPost1Changed);
+					}
+				]
+			);
+		});
+
+		it('should leave in-memory DB as is when no arguments passed reload method and server serving in-memory DB', function(done){
+			startHelper({}, null, done, [
+					function(request){
+						return request.get('/posts/1')
+							.expect(200, dbJsonPost1);
+					},
+					function(request, server){
+						server.reload('test/changed_db.json');
+
+						return request.get('/posts/1')
+							.expect(200, dbJsonPost1Changed);
+					}
+				]
+			);
+		});
+
+		it('should reload specified file when it passed to reload method', function(done){
+			startHelper({}, null, done, [
+					function(request){
+						return request.get('/posts/1')
+							.expect(200, dbJsonPost1);
+					},
+					function(request, server){
+						server.reload('test/changed_db.json');
+
+						return request.get('/posts/1')
+							.expect(200, dbJsonPost1Changed);
+					}
+				]
+			);
+		});
+
+		it('should reload in-memory Db when new object passed to reload method', function(done){
+			startHelper({}, null, done, [
+					function(request){
+						return request.get('/posts/1')
+							.expect(200, dbJsonPost1);
+					},
+					function(request, server){
+						var newDb = db;
+						newDb.posts[0] = dbJsonPost1Changed;
+
+						server.reload(newDb);
+
+						return request.get('/posts/1')
+							.expect(200, dbJsonPost1Changed);
+					}
+				]
+			);
+		});
+
 	});
 });
