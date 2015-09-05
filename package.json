@@ -33,6 +33,7 @@
     "server"
   ],
   "dependencies": {
+    "fs": "0.0.2",
     "gulp-util": "^3.0.4",
     "json-server": "^0.7.19",
     "lodash": "^3.9.3"
