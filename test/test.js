@@ -156,6 +156,22 @@ describe('Server', function(){
 		});
 
 		it('should leave in-memory DB as is when no arguments passed reload method and server serving in-memory DB', function(done){
+			startHelper({ data: db }, null, done, [
+					function(request){
+						return request.get('/posts/1')
+							.expect(200, dbJsonPost1);
+					},
+					function(request, server){
+						server.reload();
+
+						return request.get('/posts/1')
+							.expect(200, dbJsonPost1);
+					}
+				]
+			);
+		});
+
+		it('should reload specified file when it passed to reload method and server serving file', function(done){
 			startHelper({}, null, done, [
 					function(request){
 						return request.get('/posts/1')
@@ -171,8 +187,8 @@ describe('Server', function(){
 			);
 		});
 
-		it('should reload specified file when it passed to reload method', function(done){
-			startHelper({}, null, done, [
+		it('should reload specified file when it passed to reload method and server serving in-memory DB', function(done){
+			startHelper({ data: db }, null, done, [
 					function(request){
 						return request.get('/posts/1')
 							.expect(200, dbJsonPost1);
@@ -187,8 +203,8 @@ describe('Server', function(){
 			);
 		});
 
-		it('should reload in-memory Db when new object passed to reload method', function(done){
-			startHelper({}, null, done, [
+		it('should reload in-memory DB when new object passed to reload method', function(done){
+			startHelper({ data: db }, null, done, [
 					function(request){
 						return request.get('/posts/1')
 							.expect(200, dbJsonPost1);
