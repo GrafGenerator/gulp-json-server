@@ -50,15 +50,19 @@ var GulpJsonServer = function(options){
 		return this.instance;
 	};
 
-	this.kill = function(){
+	var ensureServerStarted = function(){
 		if(this.instance === null){
-			throw "JSON server not started";
+			throw 'JSON server not started';
 		}
+	}.bind(this);
+
+	this.kill = function(){
+		ensureServerStarted();
 		this.instance.close();
 	};
 
 	this.reload = function(data){
-
+		ensureServerStarted();
 	};
 
 	// ==== Initialization ====
