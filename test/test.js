@@ -37,7 +37,7 @@ describe('Server', function(){
 	};
 
 	var startHelper = function(options, serverUrl, done, assertFns){
-		var server = new jsonServer(options || {});
+		var server = jsonServer.start(options || {});
 		var asserts = Array.isArray(assertFns) ? assertFns : [ assertFns ];
 
 		if(asserts.length === 0){

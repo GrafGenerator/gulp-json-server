@@ -20,6 +20,7 @@ var GulpJsonServer = function(options){
 
 	this.start = function () {
 		if(this.serverStarted){
+			console.log('JSON server already started');
 			return this.instance;
 		}
 
@@ -72,4 +73,8 @@ var GulpJsonServer = function(options){
 };
 
 
-module.exports = GulpJsonServer;
+module.exports = {
+	start: function(options){
+		return new GulpJsonServer(options);
+	}
+};
