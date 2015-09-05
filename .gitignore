@@ -1,4 +1,4 @@
 node_modules
 db.json
 *.json
-!sample/
+!sample/*
