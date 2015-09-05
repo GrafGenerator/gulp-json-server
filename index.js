@@ -1,6 +1,8 @@
 'use strict';
 var _ = require('lodash');
 var jsonServer = require('json-server');
+var utils = require('gulp-util');
+var fs = require('fs');
 
 var GulpJsonServer = function(options){
 	this.server = null;
@@ -20,7 +22,7 @@ var GulpJsonServer = function(options){
 
 	this.start = function () {
 		if(this.serverStarted){
-			console.log('JSON server already started');
+			utils.log('JSON server already started');
 			return this.instance;
 		}
 
@@ -64,6 +66,38 @@ var GulpJsonServer = function(options){
 
 	this.reload = function(data){
 		ensureServerStarted();
+
+		var isDataFile = typeof this.options.data === 'string';
+		var newDb = null;
+
+		if(typeof(data) === 'undefined'){
+			if(!isDataFile){
+				// serving in-memory DB, exit without changes
+				return;
+			}
+
+			utils.log('reload from default file', utils.colors.yellow(this.options.data));
+			newDb = JSON.parse(fs.readFileSync(this.options.data));
+		}
+		else if(data !== null){
+			if(typeof data === 'string'){
+				// attempt to reload file
+				utils.log('reload from file', utils.colors.yellow(data));
+				newDb = JSON.parse(fs.readFileSync(data));
+			}
+			else{
+				// passed new DB object, store it
+				utils.log('reload from object');
+				newDb = data;
+			}
+		}
+
+		if(newDb === null){
+			throw 'No valid data passed for reloading. You should pass either data file path or new DB in-memory object';
+		}
+
+		this.router.db.object = newDb;
+		utils.log(utils.colors.magenta('server reloaded'));
 	};
 
 	// ==== Initialization ====

@@ -63,9 +63,9 @@ describe('Server', function(){
 		beforeEach(function(){
 			db = dbSample;
 
-			fs.writeFileSync('sample/db.json', fs.readFileSync('db.json'));
-			fs.writeFileSync('sample/db.json', fs.readFileSync('test/db.json'));
-			fs.writeFileSync('sample/changed_db.json', fs.readFileSync('test/changed_db.json'));
+			fs.writeFileSync('./db.json', fs.readFileSync('sample/db.json'));
+			fs.writeFileSync('test/db.json', fs.readFileSync('sample/db.json'));
+			fs.writeFileSync('test/changed_db.json', fs.readFileSync('sample/changed_db.json'));
 		});
 
 
@@ -142,9 +142,7 @@ describe('Server', function(){
 							.expect(200, dbJsonPost1);
 					},
 					function(request, server){
-						var dbContent = JSON.parse(fs.readFileSync('db.json'));
-						dbContent.posts[0] = dbJsonPost1Changed;
-						fs.writeFileSync('db.json', dbContent);
+						fs.writeFileSync('db.json', fs.readFileSync('test/changed_db.json'));
 
 						server.reload();
 
