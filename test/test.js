@@ -14,20 +14,40 @@ describe('Server', function(){
 	  '/blog/:resource/:id/show': '/:resource/:id'
 	};
 
-	describe('#start()', function(){
-		var startHelper = function(options, serverUrl, done, assertFn){
-			var server = new jsonServer(options || {});
-			var r = request(serverUrl || server.instance);
+	var chainedRun = function(server, url, asserts, currentIndex, done){
+		var assert = asserts[currentIndex];
+		var lastAssert = currentIndex == asserts.length - 1;
 
-			var r2 = assertFn(r);
+		var r = request(url || server.instance);
+		var r2 = assert(r);
 
-			r2.end(function(err, res){
+		r2.end(function(err, res){
+			if(err) {
 				server.kill();
-				if(err) { return done(err); }
+				return done(err);
+			}
+			if(lastAssert){
+				server.kill();
 				done();
-			});
-		};
+			}
+			else {
+				chainedRun(server, url, asserts, currentIndex + 1, done);
+			}
+		});
+	};
 
+	var startHelper = function(options, serverUrl, done, assertFns){
+		var server = new jsonServer(options || {});
+		var asserts = Array.isArray(assertFns) ? assertFns : [ assertFns ];
+
+		if(asserts.length === 0){
+			throw 'No asserts provided in test';
+		}
+
+		chainedRun(server, serverUrl, asserts, 0, done);
+	};
+
+	describe('#start()', function(){
 		it('should start server with default options (file "db.json" on port 3000)', function(done){
 			startHelper(null, 'http://localhost:3000', done, function(request){
 				return request.get('/posts')
