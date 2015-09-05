@@ -1,19 +1,29 @@
 'use strict';
 var request = require('supertest');
 var jsonServer = require('../');
+var fs = require('fs');
 
 describe('Server', function(){
-	var db = {
+
+	/* ===== sample data ===== */
+	var dbSample = {
 		posts: [{ id: 1, title: "json-server", author: "typicode" }],
 		comments: [{ id: 1, body: "some comment", postId: 1 }],
 		mongoposts: [{ _id: 1, title: "json-server", author: "typicode" }]
 	};
+
+	var db = dbSample;
+	var dbJsonPost1 = { id: 1, title: "json-server", author: "typicode" };
+	var dbJsonPost1Changed1 = { id: 1, title: "json-server", author: "grafgenerator" };
+	var dbJsonPost1Changed2 = { id: 1, title: "gulp-json-srv", author: "grafgenerator" };
 
 	var routes = {
 	  '/api/': '/',
 	  '/blog/:resource/:id/show': '/:resource/:id'
 	};
 
+
+	/* ===== tests running helpers ===== */
 	var chainedRun = function(server, url, asserts, currentIndex, done){
 		var assert = asserts[currentIndex];
 		var lastAssert = currentIndex == asserts.length - 1;
@@ -47,7 +57,18 @@ describe('Server', function(){
 		chainedRun(server, serverUrl, asserts, 0, done);
 	};
 
+
+	/* ===== main tests fixture =====*/
 	describe('#start()', function(){
+
+		beforeEach(function(){
+			db = dbSample;
+
+			fs.writeFileSync('sample/db.json', fs.readFileSync('db.json'));
+			fs.writeFileSync('sample/db.json', fs.readFileSync('test/db.json'));
+			fs.writeFileSync('sample/changed_db.json', fs.readFileSync('test/changed_db.json'));
+		});
+
 		it('should start server with default options (file "db.json" on port 3000)', function(done){
 			startHelper(null, 'http://localhost:3000', done, function(request){
 				return request.get('/posts')
