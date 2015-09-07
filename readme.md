@@ -163,6 +163,9 @@ If omitted, do nothing in case of in-memory DB, and reload data from file, speci
 
 
 ## Release notes
+### v0.0.7
+* Fixed typo in server reloading sample and updated sample itself.
+
 ### v0.0.6
 * Added reloading functionality. Now DB could be easily reloaded either from file or from object.
 * Added ability to kill the server.
