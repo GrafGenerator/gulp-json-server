@@ -46,23 +46,22 @@ gulp.task('default', function () {
 var gulp = require('gulp');
 var jsonServer = require('gulp-json-srv');
 var server = jsonServer.start({
-	data: 'db.json',
-	deferredStart: true;
+    data: 'db.json',
+    deferredStart: true
 });
 
 gulp.task('serverStart', function () {
-	server.start();
+    server.start();
 });
 
 gulp.task('watch', function () {
-	gulp.watch(['db.json'], ['serverReload']);
+    gulp.watch(['db.json'], function(){
+      server.reload();
+    });
 });
 
-gulp.task('serverReload', function () {
-	server.reload();
-});
+gulp.task('default', ['serverStart', 'watch']);
 ```
-Now run `gulp startServer watch` to run server with file's changes watching.
 
 ### Server with in-memory DB
 ```js
