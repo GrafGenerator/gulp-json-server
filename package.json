@@ -36,7 +36,8 @@
     "fs": "0.0.2",
     "gulp-util": "^3.0.4",
     "json-server": "^0.7.19",
-    "lodash": "^3.9.3"
+    "lodash": "^3.9.3",
+    "through2": "^2.0.0"
   },
   "devDependencies": {
     "gulp": "^3.9.0",

@@ -3,12 +3,14 @@ var _ = require('lodash');
 var jsonServer = require('json-server');
 var utils = require('gulp-util');
 var fs = require('fs');
+var through = require('through2');
 
 var GulpJsonServer = function(options){
 	this.server = null;
 	this.instance = null;
 	this.router = null;
 	this.serverStarted = false;
+	this.pipedKickStart = false;
 
 	this.options = {
 		data: 'db.json',
@@ -98,6 +100,42 @@ var GulpJsonServer = function(options){
 
 		this.router.db.object = newDb;
 		utils.log(utils.colors.magenta('server reloaded'));
+	};
+
+	this.pipe = function(options){
+		var defaultPipeOptions = {
+			merge: true,
+			includePreviousDbState: false;
+		};
+
+		var aggregatorObject = {};
+		var serverInstance = this;
+
+		return through.obj(function (file, enc, cb) {
+			if (file.isNull()) {
+				cb(null, file);
+				return;
+			}
+
+			if (file.isStream()) {
+				cb(new utils.PluginError('gulp-json-srv', 'Streaming not supported'));
+				return;
+			}
+
+			try {
+				//file.contents = new Buffer(someModule(file.contents.toString(), options));
+				var appendedObject = JSON.parse(file.contents.toString());
+				utils.log('reload with data', appendedObject);
+				_.assign(aggregatorObject, appendedObject || {});
+				serverInstance.reload(aggregatorObject);
+
+				this.push(file);
+			} catch (err) {
+				this.emit('error', new utils.PluginError('gulp-json-srv', err));
+			}
+
+			cb();
+		});
 	};
 
 	// ==== Initialization ====
