@@ -1,11 +1,6 @@
 'use strict';
-var _ = require('lodash');
-var jsonServer = require('json-server');
-var utils = require('gulp-util');
-var fs = require('fs');
-var through = require('through2');
 
-var GulpJsonServer = function(options){
+var GulpJsonServerOld = function(options){
 	this.server = null;
 	this.instance = null;
 	this.router = null;
@@ -145,8 +140,55 @@ var GulpJsonServer = function(options){
 };
 
 
+// ===========================================================
+
+
+var _ = require('lodash');
+var jsonServer = require('json-server');
+var utils = require('gulp-util');
+var fs = require('fs');
+var through = require('through2');
+
+
+var GulpJsonServer = function(immediateStart, immediateOptions){
+	this.server = null; // json server instance
+	this.instance = null; // express instance
+	this.router = null; // nuff said
+	this.serverStarted = false; // why i'm writing this?
+	
+	var resolveOptions = function(opts){
+		var defaultOptions = {
+			data: 'db.json',
+			port: 3000,
+			rewriteRules: null,
+			baseUrl: null,
+			id: 'id'
+		};
+		_.assign(defaultOptions, opts || {});
+		
+		return defaultOptions;
+	};
+	
+	var ensureServerStarted = function(){
+		if(this.instance === null){
+			throw 'JSON server not started';
+		}
+	}.bind(this);
+	
+	
+};
+
+
+
+
+
 module.exports = {
+	create: function(){
+		// create server, not start immediately 
+		return new GulpJsonServer(false, null);	
+	},
 	start: function(options){
-		return new GulpJsonServer(options);
+		// legacy implementation - create server and start immediately with specified options
+		return new GulpJsonServer(true, options);
 	}
 };
