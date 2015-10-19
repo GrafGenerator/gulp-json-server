@@ -162,7 +162,10 @@ var GulpJsonServer = function(immediateStart, immediateOptions){
 			port: 3000,
 			rewriteRules: null,
 			baseUrl: null,
-			id: 'id'
+			id: 'id',
+			debug: false,
+			merge: true,
+			includePreviousDbState: false
 		};
 		_.assign(defaultOptions, opts || {});
 		
@@ -175,7 +178,64 @@ var GulpJsonServer = function(immediateStart, immediateOptions){
 		}
 	}.bind(this);
 	
+	var start = function (options) {
+		if(this.serverStarted){
+			utils.log('JSON server already started');
+			return this.instance;
+		}
+
+		var server = jsonServer.create();
+		server.use(jsonServer.defaults);
+
+		if(options.rewriteRules){
+			server.use(jsonServer.rewriter(options.rewriteRules));
+		}
+
+		var router = jsonServer.router(options.data);
+		if(options.baseUrl) {
+			server.use(options.baseUrl, router);
+		}
+		else{
+			server.use(router);
+		}
+
+		if(options.id){
+			router.db._.id = this.options.id;
+		}
+
+		this.server = server;
+		this.router = router;
+		this.instance = server.listen(this.options.port);
+		this.serverStarted = true;
+
+		return this.instance;
+	}.bind(this);
 	
+	var reload = function(data){
+		var newDb = null;
+
+		if(typeof data === 'undefined'){
+			utils.log('nothing to reload, quit', utils.colors.green(data));
+		}
+		
+		if(typeof data === 'string'){
+			// attempt to reload file
+			utils.log('reload from file', utils.colors.yellow(data));
+			newDb = JSON.parse(fs.readFileSync(data));
+		}
+		else{
+			// passed new DB object, store it
+			utils.log('reload from object');
+			newDb = data;
+		}
+
+		if(newDb === null){
+			throw 'No valid data passed for reloading. You should pass either data file path or new DB in-memory object';
+		}
+
+		this.router.db.object = newDb;
+		utils.log(utils.colors.magenta('server reloaded'));
+	}.bind(this);
 };
 
 
