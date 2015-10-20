@@ -100,7 +100,7 @@ var GulpJsonServerOld = function(options){
 	this.pipe = function(options){
 		var defaultPipeOptions = {
 			merge: true,
-			includePreviousDbState: false;
+			includePreviousDbState: false
 		};
 
 		var aggregatorObject = {};
@@ -150,11 +150,13 @@ var fs = require('fs');
 var through = require('through2');
 
 
-var GulpJsonServer = function(immediateStart, immediateOptions){
+var GulpJsonServer = function(immediateOptions){
 	this.server = null; // json server instance
 	this.instance = null; // express instance
 	this.router = null; // nuff said
 	this.serverStarted = false; // why i'm writing this?
+	
+	var legacyMode = typeof immediateOptions !== 'undefined' && immediateOptions !== null;
 	
 	var resolveOptions = function(opts){
 		var defaultOptions = {
@@ -163,6 +165,7 @@ var GulpJsonServer = function(immediateStart, immediateOptions){
 			rewriteRules: null,
 			baseUrl: null,
 			id: 'id',
+			deferredStart: false,
 			debug: false,
 			merge: true,
 			includePreviousDbState: false
@@ -236,6 +239,57 @@ var GulpJsonServer = function(immediateStart, immediateOptions){
 		this.router.db.object = newDb;
 		utils.log(utils.colors.magenta('server reloaded'));
 	}.bind(this);
+	
+	this.kill = function(){
+		ensureServerStarted();
+		this.instance.close();
+	};
+	
+	
+	// ==== new impl ====
+	
+	this.pipe = function(options){
+		
+	};
+	
+	
+	
+	if(legacyMode){
+		var resolvedImmediateOptions = resolveOptions(immediateOptions);
+		
+		var logDeprecationMessage = function(funcName){
+			utils.log(utils.colors.yellow('The function "' + funcName + '" is deprecated since release of v0.0.8. Consider using pipeline intergation using pipe() function.'));
+		};
+		
+		// ==== legacy impl ====
+		this.start = function(){
+			logDeprecationMessage('start()');
+			start(resolvedImmediateOptions);
+		};
+		
+		this.reload = function(data){
+			logDeprecationMessage('reload()');
+			ensureServerStarted();
+
+			var isDataFile = typeof resolvedImmediateOptions.data === 'string';
+				
+			if(typeof(data) === 'undefined' && !isDataFile){
+				// serving in-memory DB, exit without changes
+				return;
+			}
+	
+			if(typeof data === 'string'){
+				reload(data || resolvedImmediateOptions.data)
+			}
+			else{
+				reload(data);
+			}
+		};
+		
+		// maintain legacy behavior
+		if(!resolvedImmediateOptions.deferredStart)
+			start(resolvedImmediateOptions);
+	}
 };
 
 
@@ -245,10 +299,10 @@ var GulpJsonServer = function(immediateStart, immediateOptions){
 module.exports = {
 	create: function(){
 		// create server, not start immediately 
-		return new GulpJsonServer(false, null);	
+		return new GulpJsonServer();	
 	},
 	start: function(options){
 		// legacy implementation - create server and start immediately with specified options
-		return new GulpJsonServer(true, options);
+		return new GulpJsonServer(options);
 	}
 };
