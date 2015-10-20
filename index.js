@@ -169,7 +169,7 @@ var GulpJsonServer = function(immediateOptions){
 			}
 	
 			if(typeof data === 'string'){
-				reload(data || resolvedImmediateOptions.data)
+				reload(data || resolvedImmediateOptions.data);
 			}
 			else{
 				reload(data);
@@ -177,8 +177,9 @@ var GulpJsonServer = function(immediateOptions){
 		};
 		
 		// maintain legacy behavior
-		if(!resolvedImmediateOptions.deferredStart)
+		if(!resolvedImmediateOptions.deferredStart){
 			start(resolvedImmediateOptions);
+		}
 	}
 };
 
