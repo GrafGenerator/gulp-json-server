@@ -60,12 +60,12 @@ var GulpJsonServer = function(immediateOptions){
 		}
 
 		if(options.id){
-			router.db._.id = this.options.id;
+			router.db._.id = options.id;
 		}
 
 		this.server = server;
 		this.router = router;
-		this.instance = server.listen(this.options.port);
+		this.instance = server.listen(options.port);
 		this.serverStarted = true;
 
 		return this.instance;
@@ -149,7 +149,7 @@ var GulpJsonServer = function(immediateOptions){
 		var resolvedImmediateOptions = resolveOptions(immediateOptions);
 		
 		var logDeprecationMessage = function(funcName){
-			utils.log(utils.colors.yellow('The function "' + funcName + '" is deprecated since release of v0.0.8. Consider using pipeline intergation using pipe() function.'));
+			utils.log(utils.colors.yellow('The function "' + funcName + '" is deprecated since release of v0.0.8. Consider using pipeline intergation with pipe() function.'));
 		};
 		
 		this.start = function(){
@@ -162,14 +162,15 @@ var GulpJsonServer = function(immediateOptions){
 			ensureServerStarted();
 
 			var isDataFile = typeof resolvedImmediateOptions.data === 'string';
+			var noData = typeof(data) === 'undefined';
 				
-			if(typeof(data) === 'undefined' && !isDataFile){
-				// serving in-memory DB, exit without changes
-				return;
-			}
-	
-			if(typeof data === 'string'){
-				reload(data || resolvedImmediateOptions.data);
+			if(noData){
+				if(!isDataFile){
+					// serving in-memory DB, exit without changes
+					return;
+				}
+				
+				reload(resolvedImmediateOptions.data);
 			}
 			else{
 				reload(data);
