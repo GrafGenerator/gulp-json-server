@@ -249,11 +249,45 @@ var GulpJsonServer = function(immediateOptions){
 	// ==== new impl ====
 	
 	this.pipe = function(options){
+		var resolvedOptions = resolveOptions(options);
 		
+		if(!this.serverStarted){
+			start(resolvedOptions);
+		}
+		
+		var aggregatorObject = resolvedOptions.includePreviousDbState ? this.router.db.object : {};
+
+		return through.obj(function (file, enc, cb) {
+			if (file.isNull()) {
+				cb(null, file);
+				return;
+			}
+
+			if (file.isStream()) {
+				cb(new utils.PluginError('gulp-json-srv', 'Streaming not supported'));
+				return;
+			}
+
+			try {
+				var appendedObject = JSON.parse(file.contents.toString());
+				if(resolvedOptions.debug){
+					utils.log('reload with data', appendedObject);
+				}
+				_.assign(aggregatorObject, appendedObject || {});
+				reload(aggregatorObject);
+
+				this.push(file);
+			} catch (err) {
+				this.emit('error', new utils.PluginError('gulp-json-srv', err));
+			}
+
+			cb();
+		});
 	};
 	
 	
 	
+	// ==== legacy impl ====
 	if(legacyMode){
 		var resolvedImmediateOptions = resolveOptions(immediateOptions);
 		
@@ -261,7 +295,6 @@ var GulpJsonServer = function(immediateOptions){
 			utils.log(utils.colors.yellow('The function "' + funcName + '" is deprecated since release of v0.0.8. Consider using pipeline intergation using pipe() function.'));
 		};
 		
-		// ==== legacy impl ====
 		this.start = function(){
 			logDeprecationMessage('start()');
 			start(resolvedImmediateOptions);
