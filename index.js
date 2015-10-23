@@ -107,13 +107,10 @@ var GulpJsonServer = function(immediateOptions){
 	
 	this.pipe = function(options){
 		var resolvedOptions = resolveOptions(options);
+		var aggregatorObject = this.serverStarted && resolvedOptions.includePreviousDbState ? this.router.db.object : {};
 		
-		if(!this.serverStarted){
-			start(resolvedOptions);
-		}
+		var gulpJsonSrvInstance = this;
 		
-		var aggregatorObject = resolvedOptions.includePreviousDbState ? this.router.db.object : {};
-
 		return through.obj(function (file, enc, cb) {
 			if (file.isNull()) {
 				cb(null, file);
@@ -131,6 +128,11 @@ var GulpJsonServer = function(immediateOptions){
 					utils.log('reload with data', appendedObject);
 				}
 				_.assign(aggregatorObject, appendedObject || {});
+				
+				if(!gulpJsonSrvInstance.serverStarted){
+					start(resolvedOptions);
+				}
+				
 				reload(aggregatorObject);
 
 				this.push(file);
