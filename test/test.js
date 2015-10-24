@@ -45,8 +45,8 @@ describe('Server', function(){
 		});
 	};
 
-	var startHelper = function(options, serverUrl, done, assertFns){
-		var server = jsonServer.start(options || {});
+	var basicServerStartHelper = function(options, serverUrl, done, assertFns, serverStartRoutine){
+		var server = serverStartRoutine(options);
 		var asserts = Array.isArray(assertFns) ? assertFns : [ assertFns ];
 
 		if(asserts.length === 0){
@@ -56,7 +56,18 @@ describe('Server', function(){
 		chainedRun(server, serverUrl, asserts, 0, done);
 	};
 
-
+	var startHelper = function(options, serverUrl, done, assertFns){
+		basicServerStartHelper(options, serverUrl, done, assertFns, function(opts){
+			return jsonServer.start(opts || {});
+		});
+	};
+	
+	
+	
+	
+	
+	
+	
 	/* ===== main tests fixture =====*/
 	describe('#start()', function(){
 
@@ -132,8 +143,18 @@ describe('Server', function(){
 					.expect(404, {});
 			});
 		});
+	});
 
+	describe('#reload()', function(){
+		
+		beforeEach(function(){
+			db = dbSample;
 
+			fs.writeFileSync('./db.json', fs.readFileSync('sample/db.json'));
+			fs.writeFileSync('test/db.json', fs.readFileSync('sample/db.json'));
+			fs.writeFileSync('test/changed_db.json', fs.readFileSync('sample/changed_db.json'));
+		});
+		
 		/* ===== reload testing ===== */
 		it('should reload default file when no arguments passed to reload method while serving file', function(done){
 			startHelper({}, null, done, [
@@ -233,5 +254,9 @@ describe('Server', function(){
 				]
 			);
 		});
+	});
+	
+	describe('#pipe()', function(){
+		
 	});
 });
