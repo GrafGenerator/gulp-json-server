@@ -36,7 +36,8 @@ gulp.task('default', function () {
 			'/': '/api/',
 			'/blog/:resource/:id/show': '/api/:resource/:id'
 		},
-		deferredStart: true
+		deferredStart: true,
+		static: './buildFolder' // buildFolder/app is accessible from localhost:25000/app 
 	});
 });
 ```
@@ -83,7 +84,6 @@ gulp.task('default', function () {
 	});
 });
 ```
-
 
 ## jsonServer API
 
