@@ -37,7 +37,7 @@ gulp.task('default', function () {
 			'/blog/:resource/:id/show': '/api/:resource/:id'
 		},
 		deferredStart: true,
-		static: './buildFolder' // buildFolder/app is accessible from localhost:25000/app 
+		static: './static' // serves HTML, JS and CSS from 'static' folder 
 	});
 });
 ```
@@ -163,6 +163,10 @@ If omitted, do nothing in case of in-memory DB, and reload data from file, speci
 
 
 ## Release notes
+### v0.1.0
+* Added `static` option to serve static files using json-server.
+* Starting to use semantic versioning.
+
 ### v0.0.7
 * Fixed typo in server reloading sample and updated sample itself.
 
