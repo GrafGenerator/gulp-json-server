@@ -137,6 +137,13 @@ Default: `false`
 
 Used to specify that server object should be created, but not started, assuming manual start later.
 
+##### static
+
+Type: `string`<br/>
+Default: `null`
+
+If specified and not null, sets the static files folder and lets json-server serve static files from that folder. 
+
 
 ## Server wrapper object API
 
