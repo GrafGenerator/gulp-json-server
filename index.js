@@ -123,7 +123,7 @@ var GulpJsonServer = function(options){
 	this.pipe = function(options){
 		var defaultPipeOptions = {
 			merge: true,
-			includePreviousDbState: false;
+			includePreviousDbState: false
 		};
 
 		var aggregatorObject = {};
