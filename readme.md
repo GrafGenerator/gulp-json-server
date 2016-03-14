@@ -36,6 +36,14 @@ gulp.task('default', function () {
 			'/': '/api/',
 			'/blog/:resource/:id/show': '/api/:resource/:id'
 		},
+        customRoutes: {
+            '/big_post': {
+                method: 'get',
+                handler: function(req, res) {
+                    return res.json({id: 1, title: 'Big post'});
+                }
+            }
+        },
 		deferredStart: true,
 		static: './static' // serves HTML, JS and CSS from 'static' folder 
 	});
@@ -122,6 +130,13 @@ Type: `object`<br/>
 Default: `null`
 
 A key-value pairs of rewrite rules that should be applied to server.
+
+##### customRoutes
+
+Type: `object`<br/>
+Default: `null`
+
+A key-value pairs of custom routes that should be applied to server.
 
 ##### id
 

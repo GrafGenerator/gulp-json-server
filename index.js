@@ -14,6 +14,7 @@ var GulpJsonServer = function(options){
 		data: 'db.json',
 		port: 3000,
 		rewriteRules: null,
+		customRoutes: null,
 		baseUrl: null,
 		id: 'id',
 		deferredStart: false,
@@ -37,6 +38,13 @@ var GulpJsonServer = function(options){
 			server.use(jsonServer.defaults({static: this.options.static}));
 		} else {
 			server.use(jsonServer.defaults());
+		}
+
+		if(this.options.customRoutes){
+			for(var path in this.options.customRoutes) {
+				var customRoute = this.options.customRoutes[path];
+				server[customRoute.method.toLocaleLowerCase()](path, customRoute.handler);
+			}
 		}
 
 		var router = jsonServer.router(this.options.data);
