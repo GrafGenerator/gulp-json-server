@@ -29,60 +29,12 @@ var jsonServer = require('gulp-json-srv');
 gulp.task('default', function () {
 	jsonServer.start({
 		data: 'some-else-data-file.json',
-		port: 25000,
-		id:   '_id',
-		baseUrl: '/api', // change base URl from / to /api
-		rewriteRules: {
-			'/': '/api/',
-			'/blog/:resource/:id/show': '/api/:resource/:id'
-		},
-		deferredStart: true
+		port: 25000
 	});
 });
 ```
 
-### Server with DB reloading
-```js
-var gulp = require('gulp');
-var jsonServer = require('gulp-json-srv');
-var server = jsonServer.start({
-    data: 'db.json',
-    deferredStart: true
-});
-
-gulp.task('serverStart', function () {
-    server.start();
-});
-
-gulp.task('watch', function () {
-    gulp.watch(['db.json'], function(){
-      server.reload();
-    });
-});
-
-gulp.task('default', ['serverStart', 'watch']);
-```
-
-### Server with in-memory DB
-```js
-var gulp = require('gulp');
-var jsonServer = require('gulp-json-srv');
-
-var db = {
-	users: [
-		{id: 0, name: "user0"},
-	],
-	posts: [
-		{id: 0, title: "title 1", author_id: 0},
-	]
-};
-
-gulp.task('default', function () {
-	jsonServer.start({
-		data: db
-	});
-});
-```
+See [samples](SAMPLES.MD) for more information about usage of plugin.
 
 
 ## jsonServer API
@@ -123,6 +75,13 @@ Default: `null`
 
 A key-value pairs of rewrite rules that should be applied to server.
 
+##### customRoutes
+
+Type: `object`<br/>
+Default: `null`
+
+A key-value pairs of custom routes that should be applied to server.
+
 ##### id
 
 Type: `string`<br/>
@@ -136,6 +95,13 @@ Type: `bool`<br/>
 Default: `false`
 
 Used to specify that server object should be created, but not started, assuming manual start later.
+
+##### static
+
+Type: `string`<br/>
+Default: `null`
+
+If specified and not null, sets the static files folder and lets json-server serve static files from that folder. 
 
 
 ## Server wrapper object API
@@ -162,25 +128,11 @@ If path to file, or object is passed, reloads DB with new data, no matter if ser
 If omitted, do nothing in case of in-memory DB, and reload data from file, specified by server options in case of serving the file.
 
 
-## Release notes
-### v0.0.7
-* Fixed typo in server reloading sample and updated sample itself.
+## Links
 
-### v0.0.6
-* Added reloading functionality. Now DB could be easily reloaded either from file or from object.
-* Added ability to kill the server.
-* Added deferredStart option, allowing to define server instance, but start it later.
-
-### v0.0.5
-* The `id` key, used to match objects in collections now could be changed using `id` parameter in options. Useful to simulate other DBs, for example MongoDB's `_id`.
-
-### v0.0.4
-* Added ability to change server's base URL.
-* Added ability to use rewrite rules.
-
-### v0.0.0 - v0.0.3
-Basic version of plugin with ability to start json-server from specified file or object, on specific port.
-
+* [SAMPLES.MD](SAMPLES.MD) - more examples of usage
+* [CHANGELOG.MD](CHANGELOG.MD)
+* [CONTRIBUTING.MD](CONTRIBUTING.MD) - info for contributors
 
 ## License
 
