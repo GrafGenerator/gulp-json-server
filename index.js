@@ -3,6 +3,7 @@ var _ = require('lodash');
 var jsonServer = require('json-server');
 var utils = require('gulp-util');
 var fs = require('fs');
+var bodyParser = require('body-parser');
 
 var GulpJsonServer = function(options){
 	this.server = null;
@@ -14,6 +15,7 @@ var GulpJsonServer = function(options){
 		data: 'db.json',
 		port: 3000,
 		rewriteRules: null,
+		customRoutes: null,
 		baseUrl: null,
 		id: 'id',
 		deferredStart: false,
@@ -38,6 +40,13 @@ var GulpJsonServer = function(options){
 			server.use(jsonServer.rewriter(this.options.rewriteRules));
 		}
 
+		if(this.options.customRoutes){
+			for(var path in this.options.customRoutes) {
+				var customRoute = this.options.customRoutes[path];
+				server[customRoute.method.toLocaleLowerCase()](path, customRoute.handler);
+			}
+		}
+
 		var router = jsonServer.router(this.options.data);
 		if(this.options.baseUrl) {
 			server.use(this.options.baseUrl, router);
@@ -49,6 +58,8 @@ var GulpJsonServer = function(options){
 		if(this.options.id){
 			router.db._.id = this.options.id;
 		}
+
+		server.use(bodyParser.json());
 
 		this.server = server;
 		this.router = router;
