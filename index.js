@@ -16,7 +16,8 @@ var GulpJsonServer = function(options){
 		rewriteRules: null,
 		baseUrl: null,
 		id: 'id',
-		deferredStart: false
+		deferredStart: false,
+		static: null
 	};
 	_.assign(this.options, options || {});
 
@@ -27,7 +28,11 @@ var GulpJsonServer = function(options){
 		}
 
 		var server = jsonServer.create();
-		server.use(jsonServer.defaults);
+		if (this.options.static) {
+			server.use(jsonServer.defaults({static: this.options.static}));
+		} else {
+			server.use(jsonServer.defaults());
+		}
 
 		if(this.options.rewriteRules){
 			server.use(jsonServer.rewriter(this.options.rewriteRules));

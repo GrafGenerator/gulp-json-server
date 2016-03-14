@@ -36,7 +36,8 @@ gulp.task('default', function () {
 			'/': '/api/',
 			'/blog/:resource/:id/show': '/api/:resource/:id'
 		},
-		deferredStart: true
+		deferredStart: true,
+		static: './static' // serves HTML, JS and CSS from 'static' folder 
 	});
 });
 ```
@@ -83,7 +84,6 @@ gulp.task('default', function () {
 	});
 });
 ```
-
 
 ## jsonServer API
 
@@ -137,6 +137,13 @@ Default: `false`
 
 Used to specify that server object should be created, but not started, assuming manual start later.
 
+##### static
+
+Type: `string`<br/>
+Default: `null`
+
+If specified and not null, sets the static files folder and lets json-server serve static files from that folder. 
+
 
 ## Server wrapper object API
 
@@ -163,6 +170,10 @@ If omitted, do nothing in case of in-memory DB, and reload data from file, speci
 
 
 ## Release notes
+### v0.1.0
+* Added `static` option to serve static files using json-server.
+* Starting to use semantic versioning.
+
 ### v0.0.7
 * Fixed typo in server reloading sample and updated sample itself.
 
