@@ -1,6 +1,6 @@
 {
   "name": "gulp-json-srv",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Wrapper for json-server for easy launching with Gulp",
   "license": "MIT",
   "repository": "https://github.com/GrafGenerator/gulp-json-server.git",
