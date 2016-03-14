@@ -130,9 +130,9 @@ If omitted, do nothing in case of in-memory DB, and reload data from file, speci
 
 ## Links
 
-* [SAMPLES.MD](SAMPLES.MD) - more examples of usage
-* [CHANGELOG.MD](CHANGELOG.MD)
-* [CONTRIBUTING.MD](CONTRIBUTING.MD) - info for contributors
+* [SAMPLES.md](SAMPLES.md) - more examples of usage
+* [CHANGELOG.md](CHANGELOG.md)
+* [CONTRIBUTING.md](CONTRIBUTING.md) - info for contributors
 
 ## License
 
