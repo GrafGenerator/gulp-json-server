@@ -27,15 +27,15 @@ var GulpJsonServer = function(options){
 			return this.instance;
 		}
 
+		if(this.options.rewriteRules){
+			server.use(jsonServer.rewriter(this.options.rewriteRules));
+		}
+
 		var server = jsonServer.create();
 		if (this.options.static) {
 			server.use(jsonServer.defaults({static: this.options.static}));
 		} else {
 			server.use(jsonServer.defaults());
-		}
-
-		if(this.options.rewriteRules){
-			server.use(jsonServer.rewriter(this.options.rewriteRules));
 		}
 
 		var router = jsonServer.router(this.options.data);
