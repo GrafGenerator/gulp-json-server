@@ -27,11 +27,12 @@ var GulpJsonServer = function(options){
 			return this.instance;
 		}
 
+        var server = jsonServer.create();
+        
 		if(this.options.rewriteRules){
 			server.use(jsonServer.rewriter(this.options.rewriteRules));
 		}
 
-		var server = jsonServer.create();
 		if (this.options.static) {
 			server.use(jsonServer.defaults({static: this.options.static}));
 		} else {
