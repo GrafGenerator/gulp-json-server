@@ -3,6 +3,7 @@ var _ = require('lodash');
 var jsonServer = require('json-server');
 var utils = require('gulp-util');
 var fs = require('fs');
+var bodyParser = require('body-parser');
 
 var GulpJsonServer = function(options){
 	this.server = null;
@@ -30,6 +31,9 @@ var GulpJsonServer = function(options){
 
         var server = jsonServer.create();
         
+		server.use(bodyParser.json());
+		server.use(bodyParser.urlencoded({ extended: true }));
+
 		if(this.options.rewriteRules){
 			server.use(jsonServer.rewriter(this.options.rewriteRules));
 		}
