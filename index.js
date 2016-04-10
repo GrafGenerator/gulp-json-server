@@ -7,7 +7,7 @@ var fs = require('fs');
 var through = require('through2');
 var bodyParser = require('body-parser');
 
-var GulpJsonServer = function(options){
+var GulpJsonServer = function(options, legacyMode){
 	this.server = null;
 	this.instance = null;
 	this.router = null;
@@ -27,7 +27,7 @@ var GulpJsonServer = function(options){
 	_.assign(this.options, options || {});
 
 	
-	var start = function (options) {
+	var start = function () {
 		if(this.serverStarted){
 			utils.log('JSON server already started');
 			return this.instance;
@@ -73,7 +73,7 @@ var GulpJsonServer = function(options){
 		this.serverStarted = true;
 
 		return this.instance;
-	};
+	}.bind(this);
 
 	var ensureServerStarted = function(){
 		if(this.instance === null){
@@ -116,8 +116,7 @@ var GulpJsonServer = function(options){
 	// ==== new impl ====
 	
 	this.pipe = function(options){
-		var resolvedOptions = resolveOptions(options);
-		var aggregatorObject = this.serverStarted && resolvedOptions.includePreviousDbState ? this.router.db.object : {};
+		var aggregatorObject = this.serverStarted && this.options.includePreviousDbState ? this.router.db.object : {};
 		
 		var gulpJsonSrvInstance = this;
 		
@@ -140,7 +139,7 @@ var GulpJsonServer = function(options){
 				_.assign(aggregatorObject, appendedObject || {});
 				
 				if(!gulpJsonSrvInstance.serverStarted){
-					start(resolvedOptions);
+					start();
 				}
 				
 				reload(aggregatorObject);
@@ -158,22 +157,20 @@ var GulpJsonServer = function(options){
 	
 	// ==== legacy impl ====
 	if(legacyMode){
-		var resolvedImmediateOptions = resolveOptions(immediateOptions);
-		
 		var logDeprecationMessage = function(funcName){
-			utils.log(utils.colors.yellow('The function "' + funcName + '" is deprecated since release of v0.0.8. Consider using pipeline intergation with pipe() function.'));
+			utils.log(utils.colors.yellow('The function "' + funcName + '" is deprecated since release of v0.0.8. Consider using pipeline integration with pipe() function.'));
 		};
 		
 		this.start = function(){
 			logDeprecationMessage('start()');
-			start(resolvedImmediateOptions);
+			start();
 		};
 		
 		this.reload = function(data){
 			logDeprecationMessage('reload()');
 			ensureServerStarted();
 
-			var isDataFile = typeof resolvedImmediateOptions.data === 'string';
+			var isDataFile = typeof this.options.data === 'string';
 			var noData = typeof(data) === 'undefined';
 				
 			if(noData){
@@ -182,7 +179,7 @@ var GulpJsonServer = function(options){
 					return;
 				}
 				
-				reload(resolvedImmediateOptions.data);
+				reload(this.options.data);
 			}
 			else{
 				reload(data);
@@ -190,8 +187,8 @@ var GulpJsonServer = function(options){
 		};
 		
 		// maintain legacy behavior
-		if(!resolvedImmediateOptions.deferredStart){
-			start(resolvedImmediateOptions);
+		if(!this.options.deferredStart){
+			this.start();
 		}
 	}
 };
@@ -201,12 +198,12 @@ var GulpJsonServer = function(options){
 
 
 module.exports = {
-	create: function(){
+	create: function(options){
 		// create server, not start immediately 
-		return new GulpJsonServer();	
+		return new GulpJsonServer(options, false);	
 	},
 	start: function(options){
 		// legacy implementation - create server and start immediately with specified options
-		return new GulpJsonServer(options);
+		return new GulpJsonServer(options, true);
 	}
 };
