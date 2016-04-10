@@ -34,7 +34,7 @@ gulp.task('default', function () {
 });
 ```
 
-See [samples](SAMPLES.MD) for more information about usage of plugin.
+See [samples](SAMPLES.md) for more information about usage of plugin.
 
 
 ## jsonServer API
@@ -130,9 +130,9 @@ If omitted, do nothing in case of in-memory DB, and reload data from file, speci
 
 ## Links
 
-* [SAMPLES.MD](SAMPLES.MD) - more examples of usage
-* [CHANGELOG.MD](CHANGELOG.MD)
-* [CONTRIBUTING.MD](CONTRIBUTING.MD) - info for contributors
+* [SAMPLES.MD](SAMPLES.md) - more examples of usage
+* [CHANGELOG.MD](CHANGELOG.md)
+* [CONTRIBUTING.MD](CONTRIBUTING.md) - info for contributors
 
 ## License
 
