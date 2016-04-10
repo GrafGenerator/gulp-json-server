@@ -21,6 +21,14 @@ describe('Server', function(){
 	  '/blog/:resource/:id/show': '/:resource/:id'
 	};
 
+	var customRoutes = {
+		'/big_post': {
+			method: 'get',
+			handler: function(req, res) {
+				return res.json({id: 1, title: 'Big post'});
+			}
+		}
+	};
 
 	/* ===== tests running helpers ===== */
 	var chainedRun = function(server, url, asserts, currentIndex, done){
@@ -141,6 +149,13 @@ describe('Server', function(){
 			startHelper({ data: db }, null, done, function(request){
 				return request.get('/mongoposts/1')
 					.expect(404, {});
+			});
+		});
+
+		it('should be able to use custom routes', function(done){
+			startHelper({ data: db, customRoutes: customRoutes }, null, done, function(request){
+				return request.get('/big_post')
+					.expect(200, {id: 1, title: 'Big post'});
 			});
 		});
 	});

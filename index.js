@@ -5,38 +5,27 @@ var jsonServer = require('json-server');
 var utils = require('gulp-util');
 var fs = require('fs');
 var through = require('through2');
+var bodyParser = require('body-parser');
 
+var GulpJsonServer = function(options){
+	this.server = null;
+	this.instance = null;
+	this.router = null;
+	this.serverStarted = false;
+	this.pipedKickStart = false;
 
-var GulpJsonServer = function(immediateOptions){
-	this.server = null; // json server instance
-	this.instance = null; // express instance
-	this.router = null; // nuff said
-	this.serverStarted = false; // why i'm writing this?
-	
-	var legacyMode = typeof immediateOptions !== 'undefined' && immediateOptions !== null;
-	
-	var resolveOptions = function(opts){
-		var defaultOptions = {
-			data: 'db.json',
-			port: 3000,
-			rewriteRules: null,
-			baseUrl: null,
-			id: 'id',
-			deferredStart: false,
-			debug: false,
-			merge: true,
-			includePreviousDbState: false
-		};
-		_.assign(defaultOptions, opts || {});
-		
-		return defaultOptions;
+	this.options = {
+		data: 'db.json',
+		port: 3000,
+		rewriteRules: null,
+		customRoutes: null,
+		baseUrl: null,
+		id: 'id',
+		deferredStart: false,
+		static: null
 	};
-	
-	var ensureServerStarted = function(){
-		if(this.instance === null){
-			throw 'JSON server not started';
-		}
-	}.bind(this);
+	_.assign(this.options, options || {});
+
 	
 	var start = function (options) {
 		if(this.serverStarted){
@@ -44,31 +33,52 @@ var GulpJsonServer = function(immediateOptions){
 			return this.instance;
 		}
 
-		var server = jsonServer.create();
-		server.use(jsonServer.defaults);
+        var server = jsonServer.create();
+        
+		server.use(bodyParser.json());
+		server.use(bodyParser.urlencoded({ extended: true }));
 
-		if(options.rewriteRules){
-			server.use(jsonServer.rewriter(options.rewriteRules));
+		if(this.options.rewriteRules){
+			server.use(jsonServer.rewriter(this.options.rewriteRules));
 		}
 
-		var router = jsonServer.router(options.data);
-		if(options.baseUrl) {
-			server.use(options.baseUrl, router);
+		if (this.options.static) {
+			server.use(jsonServer.defaults({static: this.options.static}));
+		} else {
+			server.use(jsonServer.defaults());
+		}
+
+		if(this.options.customRoutes){
+			for(var path in this.options.customRoutes) {
+				var customRoute = this.options.customRoutes[path];
+				server[customRoute.method.toLocaleLowerCase()](path, customRoute.handler);
+			}
+		}
+
+		var router = jsonServer.router(this.options.data);
+		if(this.options.baseUrl) {
+			server.use(this.options.baseUrl, router);
 		}
 		else{
 			server.use(router);
 		}
 
-		if(options.id){
-			router.db._.id = options.id;
+		if(this.options.id){
+			router.db._.id = this.options.id;
 		}
 
 		this.server = server;
 		this.router = router;
-		this.instance = server.listen(options.port);
+		this.instance = server.listen(this.options.port);
 		this.serverStarted = true;
 
 		return this.instance;
+	};
+
+	var ensureServerStarted = function(){
+		if(this.instance === null){
+			throw 'JSON server not started';
+		}
 	}.bind(this);
 	
 	var reload = function(data){
