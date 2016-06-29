@@ -53,8 +53,8 @@ describe('Server', function(){
 		});
 	};
 
-	var basicServerStartHelper = function(options, serverUrl, done, assertFns, serverStartRoutine){
-		var server = serverStartRoutine(options);
+	var startHelper = function(options, serverUrl, done, assertFns){
+		var server = jsonServer.start(options || {});;
 		var asserts = Array.isArray(assertFns) ? assertFns : [ assertFns ];
 
 		if(asserts.length === 0){
@@ -62,12 +62,6 @@ describe('Server', function(){
 		}
 
 		chainedRun(server, serverUrl, asserts, 0, done);
-	};
-
-	var startHelper = function(options, serverUrl, done, assertFns){
-		basicServerStartHelper(options, serverUrl, done, assertFns, function(opts){
-			return jsonServer.start(opts || {});
-		});
 	};
 	
 	
@@ -273,5 +267,28 @@ describe('Server', function(){
 	
 	describe('#pipe()', function(){
 		
+		
+		it('should load file content when it\'s piped', function(done){
+			var server = jsonServer.create();
+			var serverStream = server.pipe();
+			var req = request('http://localhost:3000');
+			
+			req
+				.get('/posts/1')
+				.expect(404, {});
+				
+			serverStream.write({
+				isNull: function(){return false;},
+				isStream: function(){return false;},
+				contents: JSON.stringify(db)
+			});
+			
+			req
+				.get('/posts/1')
+				.expect(200, dbJsonPost1)
+				.end(function(){done();});
+				
+			server.kill();
+		});
 	});
 });

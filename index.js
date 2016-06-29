@@ -22,7 +22,8 @@ var GulpJsonServer = function(options, legacyMode){
 		baseUrl: null,
 		id: 'id',
 		deferredStart: false,
-		static: null
+		static: null,
+		includePreviousDbState: false
 	};
 	_.assign(this.options, options || {});
 
@@ -133,7 +134,7 @@ var GulpJsonServer = function(options, legacyMode){
 
 			try {
 				var appendedObject = JSON.parse(file.contents.toString());
-				if(resolvedOptions.debug){
+				if(gulpJsonSrvInstance.debug){
 					utils.log('reload with data', appendedObject);
 				}
 				_.assign(aggregatorObject, appendedObject || {});
