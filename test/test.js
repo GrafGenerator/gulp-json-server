@@ -1,4 +1,5 @@
 'use strict';
+
 var request = require('supertest');
 var jsonServer = require('../');
 var fs = require('fs');
@@ -249,13 +250,15 @@ describe('Server', function(){
 		});
 
 		it('should reload in-memory DB when original DB object modified', function(done){
-			startHelper({ data: db }, null, done, [
+			var dbCopy = JSON.parse(JSON.stringify(db));
+
+			startHelper({ data: dbCopy }, null, done, [
 					function(request){
 						return request.get('/posts/1')
 							.expect(200, dbJsonPost1);
 					},
 					function(request, server){
-						db.posts[0] = dbJsonPost1Changed;
+						dbCopy.posts[0] = dbJsonPost1Changed;
 
 						return request.get('/posts/1')
 							.expect(200, dbJsonPost1Changed);
@@ -266,29 +269,109 @@ describe('Server', function(){
 	});
 	
 	describe('#pipe()', function(){
-		
+		var pipeHelper = function(url, done, options){
+			this.url = url;
+			this.done = done;
+			this.options = options || {};
+
+			const requestActionName = "request";
+			const pipeContentActionName = "pipeContentActionName";
+
+			this.actions = [];
+			this.lastActionIndex = -1;
+
+			var addAction = function(actionName, fn){
+				this.actions.push({
+					name: actionName,
+					info: fn
+				});
+			}.bind(this);
+
+			this.request = function(fn){
+				addAction(requestActionName, fn);
+				this.lastActionIndex = this.actions.length - 1;
+				return this;
+			};
+
+			this.pipeContent = function(content){
+				addAction(pipeContentActionName, content);
+				return this;
+			};
+
+			var chainedRun = function(server, serverStream, url, actions, currentIndex, done){
+				var action = actions[currentIndex];
+				var isLastAction = currentIndex === this.lastActionIndex;
+
+				var r = request(url || server.instance);
+
+				switch(action.name){
+					case pipeContentActionName:
+						serverStream.write({
+							isNull: function(){return false;},
+							isStream: function(){return false;},
+							contents: JSON.stringify(action.info)
+						});
+
+						chainedRun(server, serverStream, url, actions, currentIndex + 1, done);
+
+						break;
+
+					case requestActionName:
+						var r2 = action.info(r);
+
+						r2.end(function(err, res){
+							if(err) {
+								server.kill();
+								return done(err);
+							}
+							console.log(isLastAction)
+							if(isLastAction){
+								server.kill();
+								done();
+							}
+							else {
+								chainedRun(server, serverStream, url, actions, currentIndex + 1, done);
+							}
+						});
+						break;
+
+					default:
+						throw "Unknown test action type."
+				}
+
+				
+			}.bind(this);
+
+			this.go = function(){
+				var server = jsonServer.create(this.options);
+				var serverStream = server.pipe();
+
+				if(this.actions.length === 0){
+					throw "No actions specified in test."
+				}
+
+				if(this.lastActionIndex === -1){
+					throw "No request actions specified in test."
+				}
+
+				chainedRun(server, serverStream, this.url, this.actions, 0, this.done);
+			};
+		}
+
+
 		
 		it('should load file content when it\'s piped', function(done){
-			var server = jsonServer.create();
-			var serverStream = server.pipe();
-			var req = request('http://localhost:3000');
-			
-			req
-				.get('/posts/1')
-				.expect(404, {});
-				
-			serverStream.write({
-				isNull: function(){return false;},
-				isStream: function(){return false;},
-				contents: JSON.stringify(db)
-			});
-			
-			req
-				.get('/posts/1')
-				.expect(200, dbJsonPost1)
-				.end(function(){done();});
-				
-			server.kill();
+			var helper = new pipeHelper('http://localhost:3000', done);
+
+			helper
+				.pipeContent(db)
+				.request(function(req){
+					return req
+						.get('/posts/1')
+						.expect(200, dbJsonPost1);
+				});
+
+			helper.go();
 		});
 	});
 });

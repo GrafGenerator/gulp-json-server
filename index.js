@@ -76,10 +76,14 @@ var GulpJsonServer = function(options, legacyMode){
 		return this.instance;
 	}.bind(this);
 
-	var ensureServerStarted = function(){
+	var ensureServerStarted = function(silent){
 		if(this.instance === null){
-			throw 'JSON server not started';
+			if(!silent){
+				throw 'JSON server not started';
+			}
 		}
+
+		return this.instance !== null;
 	}.bind(this);
 	
 	var reload = function(data){
@@ -109,8 +113,16 @@ var GulpJsonServer = function(options, legacyMode){
 	}.bind(this);
 	
 	this.kill = function(){
-		ensureServerStarted();
-		this.instance.close();
+		if(legacyMode){
+			ensureServerStarted();
+			this.instance.close();
+		}
+		else{
+			var instanceExist = ensureServerStarted(true);
+			if(instanceExist){
+				this.instance.close();
+			}
+		}
 	};
 	
 	
