@@ -274,8 +274,10 @@ describe('Server', function(){
 			this.done = done;
 			this.options = options || {};
 
-			const requestActionName = "request";
-			const pipeContentActionName = "pipeContentActionName";
+			var ActionName = {
+				Request: "request",
+				PipeContent: "pipeContent"
+			};
 
 			this.actions = [];
 			this.lastActionIndex = -1;
@@ -288,13 +290,13 @@ describe('Server', function(){
 			}.bind(this);
 
 			this.request = function(fn){
-				addAction(requestActionName, fn);
+				addAction(ActionName.Request, fn);
 				this.lastActionIndex = this.actions.length - 1;
 				return this;
 			};
 
 			this.pipeContent = function(content){
-				addAction(pipeContentActionName, content);
+				addAction(ActionName.PipeContent, content);
 				return this;
 			};
 
@@ -305,7 +307,7 @@ describe('Server', function(){
 				var r = request(url || server.instance);
 
 				switch(action.name){
-					case pipeContentActionName:
+					case ActionName.PipeContent:
 						serverStream.write({
 							isNull: function(){return false;},
 							isStream: function(){return false;},
@@ -316,7 +318,7 @@ describe('Server', function(){
 
 						break;
 
-					case requestActionName:
+					case ActionName.Request:
 						var r2 = action.info(r);
 
 						r2.end(function(err, res){
