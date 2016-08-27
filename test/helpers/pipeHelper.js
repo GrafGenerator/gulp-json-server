@@ -34,7 +34,7 @@ var pipeHelper = function(url, done, options){
         return this;
     };
 
-    var chainedRun = function(server, serverStream, url, actions, currentIndex, done){
+    var chainedRun = function(server, url, actions, currentIndex, done){
         var action = actions[currentIndex];
         var isLastAction = currentIndex === this.lastActionIndex;
 
@@ -42,13 +42,13 @@ var pipeHelper = function(url, done, options){
 
         switch(action.name){
             case ActionName.PipeContent:
-                serverStream.write({
+                server.pipe().write({
                     isNull: function(){return false;},
                     isStream: function(){return false;},
                     contents: JSON.stringify(action.info)
                 });
 
-                chainedRun(server, serverStream, url, actions, currentIndex + 1, done);
+                chainedRun(server, url, actions, currentIndex + 1, done);
 
                 break;
 
@@ -66,7 +66,7 @@ var pipeHelper = function(url, done, options){
                         done();
                     }
                     else {
-                        chainedRun(server, serverStream, url, actions, currentIndex + 1, done);
+                        chainedRun(server, url, actions, currentIndex + 1, done);
                     }
                 });
                 break;
@@ -80,7 +80,6 @@ var pipeHelper = function(url, done, options){
 
     this.go = function(){
         var server = jsonServer.create(this.options);
-        var serverStream = server.pipe();
 
         if(this.actions.length === 0){
             throw "No actions specified in test."
@@ -90,7 +89,7 @@ var pipeHelper = function(url, done, options){
             throw "No request actions specified in test."
         }
 
-        chainedRun(server, serverStream, this.url, this.actions, 0, this.done);
+        chainedRun(server, this.url, this.actions, 0, this.done);
     };
 };
 

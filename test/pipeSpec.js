@@ -50,13 +50,13 @@ describe('#pipe()', function(){
 			.pipeContent(dbBigger)
 			.request(function(req){
 				return req
-					.get('/')
+					.get('/db')
 					.expect(200, dbBigger);
 			})
 			.pipeContent(dbLesser)
 			.request(function(req){
 				return req
-					.get('/')
+					.get('/db')
 					.expect(200, dbLesser);
 			});
 
@@ -67,11 +67,11 @@ describe('#pipe()', function(){
 		var helper = new pipeHelper('http://localhost:3000', done);
 
 		helper
-			.pipeContent(db)
+			.pipeContent(dbBigger)
 			.request(function(req){
 				return req
 					.get('/posts/1')
-					.expect(200, dbJsonPost1);
+					.expect(200, post1);
 			});
 
 		helper.go();
@@ -81,11 +81,11 @@ describe('#pipe()', function(){
 		var helper = new pipeHelper('http://localhost:3000', done);
 
 		helper
-			.pipeContent(db)
+			.pipeContent(dbBigger)
 			.request(function(req){
 				return req
 					.get('/posts/1')
-					.expect(200, dbJsonPost1);
+					.expect(200, post1);
 			});
 
 		helper.go();
@@ -95,11 +95,11 @@ describe('#pipe()', function(){
 		var helper = new pipeHelper('http://localhost:3000', done);
 
 		helper
-			.pipeContent(db)
+			.pipeContent(dbBigger)
 			.request(function(req){
 				return req
 					.get('/posts/1')
-					.expect(200, dbJsonPost1);
+					.expect(200, post1);
 			});
 
 		helper.go();
