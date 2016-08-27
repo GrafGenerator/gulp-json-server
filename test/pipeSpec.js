@@ -40,10 +40,9 @@ describe('#pipe()', function(){
 		helper.go();
 	});
 
-	it('should drop previous state when includePreviousDbState=false', function(done){
+	it('should drop previous state when cumulative=false', function(done){
 		var helper = new pipeHelper('http://localhost:3000', done, {
-			cumulative: false,
-			debug:true
+			cumulative: false
 		});
 
 		helper
@@ -63,7 +62,29 @@ describe('#pipe()', function(){
 		helper.go();
 	});
 
-	it('should combine previous state with new when includePreviousDbState=true', function(done){
+	it('should combine previous state with new when cumulative=true', function(done){
+		var helper = new pipeHelper('http://localhost:3000', done, {
+			cumulative: true
+		});
+
+		helper
+			.pipeContent(dbBigger)
+			.request(function(req){
+				return req
+					.get('/db')
+					.expect(200, dbBigger);
+			})
+			.pipeContent(dbLesser)
+			.request(function(req){
+				return req
+					.get('/db')
+					.expect(200, dbLesser);
+			});
+
+		helper.go();
+	});
+
+	it('should combine input in one pipe session when cumulative input=true', function(done){
 		var helper = new pipeHelper('http://localhost:3000', done);
 
 		helper
@@ -77,7 +98,7 @@ describe('#pipe()', function(){
 		helper.go();
 	});
 
-	it('should combine input in one pipe session', function(done){
+	it('should take last one input in one pipe session when cumulative input=false', function(done){
 		var helper = new pipeHelper('http://localhost:3000', done);
 
 		helper
