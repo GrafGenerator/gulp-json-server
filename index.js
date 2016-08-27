@@ -12,7 +12,6 @@ var GulpJsonServer = function(options, legacyMode){
 	this.instance = null;
 	this.router = null;
 	this.serverStarted = false;
-	this.pipedKickStart = false;
 
 	this.options = {
 		data: 'db.json',
@@ -23,7 +22,7 @@ var GulpJsonServer = function(options, legacyMode){
 		id: 'id',
 		deferredStart: false,
 		static: null,
-		includePreviousDbState: false
+		cumulative: false
 	};
 	_.assign(this.options, options || {});
 
@@ -129,7 +128,9 @@ var GulpJsonServer = function(options, legacyMode){
 	// ==== new impl ====
 	
 	this.pipe = function(options){
-		var aggregatorObject = this.serverStarted && this.options.includePreviousDbState ? this.router.db.object : {};
+		var aggregatorObject = this.serverStarted && this.options.cumulative 
+			? this.router.db.object || {} 
+			: {};
 		
 		var gulpJsonSrvInstance = this;
 		
