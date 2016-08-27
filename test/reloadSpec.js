@@ -17,7 +17,7 @@ var dbJsonPost1Changed = { id: 1, title: "gulp-json-srv", author: "grafgenerator
 
 
 
-		
+/*
 
 describe('#reload()', function(){
 	
@@ -29,7 +29,6 @@ describe('#reload()', function(){
 		fs.writeFileSync('test/changed_db.json', fs.readFileSync('sample/changed_db.json'));
 	});
 	
-	/* ===== reload testing ===== */
 	it('should reload default file when no arguments passed to reload method while serving file', function(done){
 		startHelper({}, null, done, [
 				function(request){
@@ -131,3 +130,5 @@ describe('#reload()', function(){
 		);
 	});
 });
+
+*/
