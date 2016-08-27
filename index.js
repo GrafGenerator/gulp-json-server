@@ -171,17 +171,11 @@ var GulpJsonServer = function(options, legacyMode){
 	
 	// ==== legacy impl ====
 	if(legacyMode){
-		var logDeprecationMessage = function(funcName){
-			utils.log(utils.colors.yellow('The function "' + funcName + '" is deprecated since release of v0.0.8. Consider using pipeline integration with pipe() function.'));
-		};
-		
 		this.start = function(){
-			logDeprecationMessage('start()');
 			start();
 		};
 		
 		this.reload = function(data){
-			logDeprecationMessage('reload()');
 			ensureServerStarted();
 
 			var isDataFile = typeof this.options.data === 'string';

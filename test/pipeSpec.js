@@ -4,15 +4,22 @@ var pipeHelper = require('./helpers/pipeHelper');
 
 
 /* ===== sample data ===== */
-var dbSample = {
-	posts: [{ id: 1, title: "json-server", author: "typicode" }],
-	comments: [{ id: 1, body: "some comment", postId: 1 }],
-	mongoposts: [{ _id: 1, title: "json-server", author: "typicode" }]
+var post1 = { id: 1, title: "json-server", author: "typicode" };
+var post2 = { id: 2, title: "gulp-json-srv", author: "grafgenerator" }
+var post3 = { id: 3, title: "gulp-json-srv@1.0.0", author: "grafgenerator" }
+var post4 = { id: 4, title: "gulp-json-srv@beta", author: "grafgenerator" }
+
+var dbBigger = {
+	posts: [
+		post1,
+		post2,
+		post3
+	]
 };
 
-var db = dbSample;
-var dbJsonPost1 = { id: 1, title: "json-server", author: "typicode" };
-var dbJsonPost1Changed = { id: 1, title: "gulp-json-srv", author: "grafgenerator" };
+var dbLesser = {
+	posts: [post1, post4]
+};
 /* ===== sample data ===== */
 
 
@@ -23,11 +30,11 @@ describe('#pipe()', function(){
 		var helper = new pipeHelper('http://localhost:3000', done);
 
 		helper
-			.pipeContent(db)
+			.pipeContent(dbBigger)
 			.request(function(req){
 				return req
 					.get('/posts/1')
-					.expect(200, dbJsonPost1);
+					.expect(200, post1);
 			});
 
 		helper.go();
@@ -35,15 +42,22 @@ describe('#pipe()', function(){
 
 	it('should drop previous state when includePreviousDbState=false', function(done){
 		var helper = new pipeHelper('http://localhost:3000', done, {
-			cumulative: false
+			cumulative: false,
+			debug:true
 		});
 
 		helper
-			.pipeContent(db)
+			.pipeContent(dbBigger)
 			.request(function(req){
 				return req
-					.get('/posts/1')
-					.expect(200, dbJsonPost1);
+					.get('/')
+					.expect(200, dbBigger);
+			})
+			.pipeContent(dbLesser)
+			.request(function(req){
+				return req
+					.get('/')
+					.expect(200, dbLesser);
 			});
 
 		helper.go();
