@@ -26,7 +26,9 @@ describe('#pipe()', function(){
 
 
 	it('should load file content when it\'s piped', function(done){
-		var helper = new pipeHelper('http://localhost:3003', done);
+		var helper = new pipeHelper('http://localhost:3003', done, {
+			port: 3003
+		});
 
 		helper
 			.pipeContent(dbBigger)
@@ -41,6 +43,7 @@ describe('#pipe()', function(){
 
 	it('should drop previous state when cumulative=false', function(done){
 		var helper = new pipeHelper('http://localhost:3003', done, {
+			port: 3003,
 			cumulative: false
 		});
 
@@ -63,6 +66,7 @@ describe('#pipe()', function(){
 
 	it('should combine previous state with new when cumulative=true', function(done){
 		var helper = new pipeHelper('http://localhost:3003', done, {
+			port: 3003,
 			cumulative: true
 		});
 
@@ -84,7 +88,9 @@ describe('#pipe()', function(){
 	});
 
 	it('should combine input in one pipe session when cumulative input=true', function(done){
-		var helper = new pipeHelper('http://localhost:3003', done);
+		var helper = new pipeHelper('http://localhost:3003', done, {
+			port: 3003			
+		});
 
 		helper
 			.pipeContent(dbBigger)
@@ -98,7 +104,9 @@ describe('#pipe()', function(){
 	});
 
 	it('should take last one input in one pipe session when cumulative input=false', function(done){
-		var helper = new pipeHelper('http://localhost:3003', done);
+		var helper = new pipeHelper('http://localhost:3003', done, {
+			port: 3003			
+		});
 
 		helper
 			.pipeContent(dbBigger)
@@ -112,7 +120,9 @@ describe('#pipe()', function(){
 	});
 
 	it('should override options set at plugin level', function(done){
-		var helper = new pipeHelper('http://localhost:3003', done);
+		var helper = new pipeHelper('http://localhost:3003', done, {
+			port: 3003			
+		});
 
 		helper
 			.pipeContent(dbBigger)
