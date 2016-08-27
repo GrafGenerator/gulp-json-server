@@ -2,30 +2,29 @@
 
 var pipeHelper = require('./helpers/pipeHelper');
 
-
-/* ===== sample data ===== */
-var post1 = { id: 1, title: "json-server", author: "typicode" };
-var post2 = { id: 2, title: "gulp-json-srv", author: "grafgenerator" }
-var post3 = { id: 3, title: "gulp-json-srv@1.0.0", author: "grafgenerator" }
-var post4 = { id: 4, title: "gulp-json-srv@beta", author: "grafgenerator" }
-
-var dbBigger = {
-	posts: [
-		post1,
-		post2,
-		post3
-	]
-};
-
-var dbLesser = {
-	posts: [post1, post4]
-};
-/* ===== sample data ===== */
-
-
-
-
 describe('#pipe()', function(){
+	/* ===== sample data ===== */
+	var post1 = { id: 1, title: "json-server", author: "typicode" };
+	var post2 = { id: 2, title: "gulp-json-srv", author: "grafgenerator" }
+	var post3 = { id: 3, title: "gulp-json-srv@1.0.0", author: "grafgenerator" }
+	var post4 = { id: 4, title: "gulp-json-srv@beta", author: "grafgenerator" }
+
+	var dbBigger = {
+		posts: [
+			post1,
+			post2,
+			post3
+		]
+	};
+
+	var dbLesser = {
+		posts: [post1, post4]
+	};
+	/* ===== sample data ===== */
+
+
+
+
 	it('should load file content when it\'s piped', function(done){
 		var helper = new pipeHelper('http://localhost:3000', done);
 
