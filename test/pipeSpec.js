@@ -46,12 +46,12 @@ describe('#pipe()', function(){
 		});
 
 		helper
-			// .pipeContent(dbBigger)
-			// .request(function(req){
-			// 	return req
-			// 		.get('/db')
-			// 		.expect(200, dbBigger);
-			// })
+			.pipeContent(dbBigger)
+			.request(function(req){
+				return req
+					.get('/db')
+					.expect(200, dbBigger);
+			})
 			.pipeContent(dbLesser)
 			.request(function(req){
 				return req
@@ -68,12 +68,12 @@ describe('#pipe()', function(){
 		});
 
 		helper
-			// .pipeContent(dbBigger)
-			// .request(function(req){
-			// 	return req
-			// 		.get('/db')
-			// 		.expect(200, dbBigger);
-			// })
+			.pipeContent(dbBigger)
+			.request(function(req){
+				return req
+					.get('/db')
+					.expect(200, dbBigger);
+			})
 			.pipeContent(dbLesser)
 			.request(function(req){
 				return req

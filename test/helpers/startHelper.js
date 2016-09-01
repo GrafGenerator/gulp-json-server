@@ -19,8 +19,7 @@ var chainedRun = function(server, url, asserts, currentIndex, done){
             return;
         }
         if(lastAssert){
-            server.kill();
-            done();
+            server.kill(function(){ done(); });
         }
         else {
             chainedRun(server, url, asserts, currentIndex + 1, done);

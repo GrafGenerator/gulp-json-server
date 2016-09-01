@@ -64,8 +64,7 @@ var pipeHelper = function(url, done, options){
                     }
 
                     if(isLastAction){
-                        server.kill();
-                        done();
+                        server.kill(function(){ done(); });
                     }
                     else {
                         chainedRun(server, url, actions, currentIndex + 1, done);
