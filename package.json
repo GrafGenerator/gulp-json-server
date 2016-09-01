@@ -13,7 +13,7 @@
   },
   "scripts": {
     "jshint": "gulp jshint",
-    "test": "mocha ./test/pipeSpec.js -R spec"
+    "test": "gulp test"
   },
   "files": [
     "index.js"
