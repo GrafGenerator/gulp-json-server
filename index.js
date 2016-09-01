@@ -111,15 +111,15 @@ var GulpJsonServer = function(options, legacyMode){
 		utils.log(utils.colors.magenta('server reloaded'));
 	}.bind(this);
 	
-	this.kill = function(){
+	this.kill = function(callback){
 		if(legacyMode){
 			ensureServerStarted();
-			this.instance.close();
+			this.instance.close(callback);
 		}
 		else{
 			var instanceExist = ensureServerStarted(true);
 			if(instanceExist){
-				this.instance.close();
+				this.instance.close(callback);
 			}
 		}
 	};

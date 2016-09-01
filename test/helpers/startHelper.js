@@ -13,8 +13,10 @@ var chainedRun = function(server, url, asserts, currentIndex, done){
 
     r2.end(function(err, res){
         if(err) {
-            server.kill();
-            return done(err);
+            server.kill(function(){
+                return done(err);
+            });
+            return;
         }
         if(lastAssert){
             server.kill();

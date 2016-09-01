@@ -57,8 +57,10 @@ var pipeHelper = function(url, done, options){
 
                 r2.end(function(err, res){
                     if(err) {
-                        server.kill();
-                        return done(err);
+                        server.kill(function(){
+                            return done(err);
+                        });
+                        return;
                     }
 
                     if(isLastAction){
