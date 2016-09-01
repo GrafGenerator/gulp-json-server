@@ -27,7 +27,7 @@ var GulpJsonServer = function(options, legacyMode){
 	_.assign(this.options, options || {});
 
 	
-	var start = function () {
+	var start = function (overrideData) {
 		if(this.serverStarted){
 			utils.log('JSON server already started');
 			return this.instance;
@@ -55,7 +55,7 @@ var GulpJsonServer = function(options, legacyMode){
 			}
 		}
 
-		var router = jsonServer.router(this.options.data);
+		var router = jsonServer.router(overrideData || this.options.data);
 		if(this.options.baseUrl) {
 			server.use(this.options.baseUrl, router);
 		}
@@ -153,7 +153,7 @@ var GulpJsonServer = function(options, legacyMode){
 				_.assign(aggregatorObject, appendedObject || {});
 				
 				if(!gulpJsonSrvInstance.serverStarted){
-					start();
+					start(aggregatorObject);
 				}
 				
 				reload(aggregatorObject);
