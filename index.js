@@ -100,7 +100,7 @@ var GulpJsonServer = function(options, legacyMode){
 		else{
 			// passed new DB object, store it
 			utils.log('reload from object');
-			newDb = data;
+			newDb = JSON.parse(JSON.stringify(data));
 		}
 
 		if(newDb === null){
