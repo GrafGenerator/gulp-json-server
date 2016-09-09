@@ -22,7 +22,7 @@ var dbJsonPost1Changed = { id: 1, title: "gulp-json-srv", author: "grafgenerator
 describe('#reload()', function(){
 	
 	beforeEach(function(done){
-		db = dbSample;
+		db = JSON.parse(JSON.stringify(dbSample));
 
 		fs.writeFileSync('./db.json', fs.readFileSync('sample/db.json'));
 		fs.writeFileSync('test/db.json', fs.readFileSync('sample/db.json'));
