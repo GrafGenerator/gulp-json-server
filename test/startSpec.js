@@ -36,12 +36,14 @@ var customRoutes = {
 		
 describe('#start()', function(){
 
-	beforeEach(function(){
+	beforeEach(function(done){
 		db = dbSample;
 
 		fs.writeFileSync('./db.json', fs.readFileSync('sample/db.json'));
 		fs.writeFileSync('test/db.json', fs.readFileSync('sample/db.json'));
 		fs.writeFileSync('test/changed_db.json', fs.readFileSync('sample/changed_db.json'));
+
+		done();
 	});
 
 
