@@ -113,7 +113,7 @@ var GulpJsonServer = function(options, legacyMode){
 	
 	this.kill = function(callback){
 		if(legacyMode){
-			ensureServerStarted();
+			ensureServerStarted(false);
 			this.instance.close(callback);
 		}
 		else{
@@ -155,8 +155,9 @@ var GulpJsonServer = function(options, legacyMode){
 				if(!gulpJsonSrvInstance.serverStarted){
 					start(aggregatorObject);
 				}
-				
-				reload(aggregatorObject);
+				else{
+					reload(aggregatorObject);
+				}
 
 				this.push(file);
 			} catch (err) {
@@ -176,7 +177,7 @@ var GulpJsonServer = function(options, legacyMode){
 		};
 		
 		this.reload = function(data){
-			ensureServerStarted();
+			ensureServerStarted(false);
 
 			var isDataFile = typeof this.options.data === 'string';
 			var noData = typeof(data) === 'undefined';
