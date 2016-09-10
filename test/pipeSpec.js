@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
+var chalk = require('chalk');
 var PipeHelper = require('./helpers/pipeHelper');
 
 
@@ -25,14 +26,26 @@ var dbLesser = {
 var makeCopy = function(input){
 	return JSON.parse(JSON.stringify(input));
 };
+
+var makeOptions = function(options){
+	return _.extend({debug: true}, options);
+};
 /* ===== sample data ===== */
 
 
 
 
 describe('#pipe()', function(){
+	beforeEach(function(){
+		console.log();
+		console.log();
+		console.log();
+		console.log();
+		console.log(chalk.blue("======================================================="));		
+	});
+
 	it('should load file content when it\'s piped', function(done){
-		var helper = new PipeHelper('http://localhost:3000', done);
+		var helper = new PipeHelper('http://localhost:3000', done, makeOptions());
 
 		helper
 			.pipeContent(makeCopy(dbBigger))
@@ -46,9 +59,9 @@ describe('#pipe()', function(){
 	});
 
 	it('should drop previous state when cumulative=false', function(done){
-		var helper = new PipeHelper('http://localhost:3000', done, {
+		var helper = new PipeHelper('http://localhost:3000', done, makeOptions({
 			cumulative: false
-		});
+		}));
 
 		helper
 			.pipeContent(makeCopy(dbBigger))
@@ -68,9 +81,9 @@ describe('#pipe()', function(){
 	});
 
 	it('should combine previous state with new when cumulative=true', function(done){
-		var helper = new PipeHelper('http://localhost:3000', done, {
+		var helper = new PipeHelper('http://localhost:3000', done, makeOptions({
 			cumulative: true
-		});
+		}));
 		var combinedDb = _.extend(makeCopy(dbBigger), makeCopy(dbLesser));
 
 		helper
@@ -91,9 +104,9 @@ describe('#pipe()', function(){
 	});
 
 	it('should combine input in one pipe session when cumulative input=true', function(done){
-		var helper = new PipeHelper('http://localhost:3000', done, {
+		var helper = new PipeHelper('http://localhost:3000', done, makeOptions({
 			cumulativeSession: true
-		});
+		}));
 		var combinedDb = _.extend(makeCopy(dbBigger), makeCopy(dbLesser));
 
 		helper
@@ -101,16 +114,16 @@ describe('#pipe()', function(){
 			.request(function(req){
 				return req
 					.get('/db')
-					.expect(200, makeCopy(combinedDb));
+					.expect(200, combinedDb);
 			});
 
 		helper.go();
 	});
 
 	it('should take last one input in one pipe session when cumulative input=false', function(done){
-		var helper = new PipeHelper('http://localhost:3000', done, {
+		var helper = new PipeHelper('http://localhost:3000', done, makeOptions({
 			cumulativeSession: false
-		});
+		}));
 
 		helper
 			.pipeContent([makeCopy(dbBigger), makeCopy(dbLesser)])
@@ -124,7 +137,7 @@ describe('#pipe()', function(){
 	});
 
 	it('should override options set at plugin level', function(done){
-		var helper = new PipeHelper('http://localhost:3000', done);
+		var helper = new PipeHelper('http://localhost:3000', done, makeOptions());
 
 		helper
 			.pipeContent(makeCopy(dbBigger))

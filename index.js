@@ -31,8 +31,14 @@ var GulpJsonServer = function(options){
 	
 	var start = function (data) {
 		if(this.serverStarted){
-			console.log(chalk.yellow('JSON server already started'));
+			if(this.options.debug){
+				console.log(chalk.yellow('JSON server already started'));
+			}
 			return this.instance;
+		}
+
+		if(this.options.debug){
+			console.log(chalk.green("starting server"));
 		}
 
         var server = jsonServer.create();
@@ -82,12 +88,22 @@ var GulpJsonServer = function(options){
 
 	var reload = function(data){
 		if(typeof data === 'undefined'){
-			console.log(chalk.yellow('nothing to reload, quit'));
+			if(this.options.debug){
+				console.log(chalk.yellow('nothing to reload, quit'));
+			}
 			return;
 		}
 
-		this.kill();
-		start(data);		
+		if(this.options.debug){
+			console.log(chalk.yellow("destroying server..."));
+		}
+		var gulpJsonSrvInstance = this;
+		this.kill(function(){
+			if(gulpJsonSrvInstance.options.debug){
+				console.log(chalk.yellow("server destroyed"));
+			}
+		});
+		start(data);
 	}.bind(this);
 
 
@@ -124,10 +140,15 @@ var GulpJsonServer = function(options){
 
 				if(gulpJsonSrvInstance.options.cumulativeSession){
 					_.extend(aggregatorObject, appendedObject || {});
+					if(gulpJsonSrvInstance.options.debug){
+						console.log(chalk.green("combine DB data in session"));
+					}
 				}
 				else{
 					aggregatorObject = appendedObject || {};
-					console.log(chalk.green("override DB data since cumulativeSession=false"));
+					if(gulpJsonSrvInstance.options.debug){
+						console.log(chalk.green("override DB data in session (cumulativeSession=false)"));
+					}
 				}
 				
 				reload(aggregatorObject);
