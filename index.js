@@ -127,8 +127,11 @@ var GulpJsonServer = function(options){
 	};
 	
 	this.pipe = function(options){
+		var isCumulative = typeof(options.cumulative) != "undefined" ? options.cumulative : this.options.cumulative;
+		var isCumulativeSession = typeof(options.cumulativeSession) != "undefined" ? options.cumulativeSession : this.options.cumulativeSession;
+
 		// HACK json-server to get its db object if needed
-		var aggregatorObject = this.serverStarted && this.options.cumulative ? this.router.db.object || {} : {};
+		var aggregatorObject = this.serverStarted && isCumulative ? this.router.db.object || {} : {};
 		var gulpJsonSrvInstance = this;
 		
 		if(this.devMode){
@@ -156,7 +159,7 @@ var GulpJsonServer = function(options){
 					console.log(JSON.stringify(appendedObject));
 				}
 
-				if(gulpJsonSrvInstance.options.cumulativeSession){
+				if(isCumulativeSession){
 					_.mergeWith(aggregatorObject, appendedObject || {}, gulpJsonSrvInstance.customizer);
 					if(gulpJsonSrvInstance.options.debug){
 						console.log(chalk.green("combine DB data in session"));

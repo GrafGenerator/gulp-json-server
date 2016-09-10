@@ -180,21 +180,26 @@ describe('#pipe()', function(){
 
 	it('should override cumulative option set at plugin level', function(done){
 		var helper = new PipeHelper('http://localhost:3000', done, makeOptions({
-			cumulative: true
+			cumulative: false
 		}));
 
 		helper
 			.pipeContent(makeCopy(dbBigger))
 			.request(function(req){
 				return req
-					.get('/db')
-					.expect(200, makeCopy(dbBigger));
+					.get('/posts/2')
+					.expect(200, makeCopy(post2));
 			})
-			.pipeContent(makeCopy(dbLesser))
+			.pipeContent(makeCopy(dbLesser), { cumulative: true })
 			.request(function(req){
 				return req
-					.get('/db')
-					.expect(200, makeCopy(dbLesser));
+					.get('/posts/2')
+					.expect(200, makeCopy(post2));
+			})
+			.request(function(req){
+				return req
+					.get('/posts/4')
+					.expect(200, makeCopy(post4));
 			});
 
 		helper.go();
@@ -202,16 +207,20 @@ describe('#pipe()', function(){
 
 	it('should override cumulativeSession option set at plugin level', function(done){
 		var helper = new PipeHelper('http://localhost:3000', done, makeOptions({
-			cumulativeSession: false
+			cumulativeSession: true
 		}));
-		var combinedDb = _.extend(makeCopy(dbBigger), makeCopy(dbLesser));
 
 		helper
-			.pipeContent([makeCopy(dbBigger), makeCopy(dbLesser)], { cumulativeSession: true})
+			.pipeContent([makeCopy(dbBigger), makeCopy(dbLesser)], { cumulativeSession: false})
 			.request(function(req){
 				return req
-					.get('/db')
-					.expect(200, combinedDb);
+					.get('/posts/2')
+					.expect(404);
+			})
+			.request(function(req){
+				return req
+					.get('/posts/4')
+					.expect(200, makeCopy(post4));
 			});
 
 		helper.go();
