@@ -41,7 +41,10 @@ var pipeHelper = function(url, done, options){
             contents.push(content);
         }
 
-        addAction(ActionName.PipeContent, { contents, options });
+        addAction(ActionName.PipeContent, { 
+            contents: contents, 
+            options: options 
+        });
 
         return this;
     };
