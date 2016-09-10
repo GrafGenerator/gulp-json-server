@@ -1,5 +1,6 @@
 'use strict';
 
+var _ = require('lodash');
 var PipeHelper = require('./helpers/pipeHelper');
 
 
@@ -20,6 +21,10 @@ var dbBigger = {
 var dbLesser = {
 	posts: [post1, post4]
 };
+
+var makeCopy = function(input){
+	return JSON.parse(JSON.stringify(input));
+};
 /* ===== sample data ===== */
 
 
@@ -30,11 +35,11 @@ describe('#pipe()', function(){
 		var helper = new PipeHelper('http://localhost:3000', done);
 
 		helper
-			.pipeContent(dbBigger)
+			.pipeContent(makeCopy(dbBigger))
 			.request(function(req){
 				return req
 					.get('/posts/1')
-					.expect(200, post1);
+					.expect(200, makeCopy(post1));
 			});
 
 		helper.go();
@@ -46,17 +51,17 @@ describe('#pipe()', function(){
 		});
 
 		helper
-			.pipeContent(dbBigger)
+			.pipeContent(makeCopy(dbBigger))
 			.request(function(req){
 				return req
 					.get('/db')
-					.expect(200, dbBigger);
+					.expect(200, makeCopy(dbBigger));
 			})
-			.pipeContent(dbLesser)
+			.pipeContent(makeCopy(dbLesser))
 			.request(function(req){
 				return req
 					.get('/db')
-					.expect(200, dbLesser);
+					.expect(200, makeCopy(dbLesser));
 			});
 
 		helper.go();
@@ -66,47 +71,53 @@ describe('#pipe()', function(){
 		var helper = new PipeHelper('http://localhost:3000', done, {
 			cumulative: true
 		});
+		var combinedDb = _.extend(makeCopy(dbBigger), makeCopy(dbLesser));
 
 		helper
-			.pipeContent(dbBigger)
+			.pipeContent(makeCopy(dbBigger))
 			.request(function(req){
 				return req
 					.get('/db')
-					.expect(200, dbBigger);
+					.expect(200, makeCopy(dbBigger));
 			})
-			.pipeContent(dbLesser)
+			.pipeContent(makeCopy(dbLesser))
 			.request(function(req){
 				return req
 					.get('/db')
-					.expect(200, dbLesser);
+					.expect(200, combinedDb);
 			});
 
 		helper.go();
 	});
 
 	it('should combine input in one pipe session when cumulative input=true', function(done){
-		var helper = new PipeHelper('http://localhost:3000', done);
+		var helper = new PipeHelper('http://localhost:3000', done, {
+			cumulativeSession: true
+		});
+		var combinedDb = _.extend(makeCopy(dbBigger), makeCopy(dbLesser));
 
 		helper
-			.pipeContent(dbBigger)
+			.pipeContent([makeCopy(dbBigger), makeCopy(dbLesser)])
 			.request(function(req){
 				return req
-					.get('/posts/1')
-					.expect(200, post1);
+					.get('/db')
+					.expect(200, makeCopy(combinedDb));
 			});
 
 		helper.go();
 	});
 
 	it('should take last one input in one pipe session when cumulative input=false', function(done){
-		var helper = new PipeHelper('http://localhost:3000', done);
+		var helper = new PipeHelper('http://localhost:3000', done, {
+			cumulativeSession: false
+		});
 
 		helper
-			.pipeContent(dbBigger)
+			.pipeContent([makeCopy(dbBigger), makeCopy(dbLesser)])
 			.request(function(req){
 				return req
-					.get('/posts/1')
-					.expect(200, post1);
+					.get('/db')
+					.expect(200, makeCopy(dbLesser));
 			});
 
 		helper.go();
@@ -116,11 +127,11 @@ describe('#pipe()', function(){
 		var helper = new PipeHelper('http://localhost:3000', done);
 
 		helper
-			.pipeContent(dbBigger)
+			.pipeContent(makeCopy(dbBigger))
 			.request(function(req){
 				return req
 					.get('/posts/1')
-					.expect(200, post1);
+					.expect(200, makeCopy(post1));
 			});
 
 		helper.go();

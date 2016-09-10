@@ -21,7 +21,9 @@ var GulpJsonServer = function(options){
 		baseUrl: null,
 		id: 'id',
 		static: null,
-		cumulative: false
+		cumulative: false,
+		cumulativeSession: true,
+		debug: false
 	};
 	
 	_.extend(this.options, options || {});
@@ -115,12 +117,18 @@ var GulpJsonServer = function(options){
 
 			try {
 				var appendedObject = JSON.parse(file.contents.toString());
-				if(gulpJsonSrvInstance.debug){
+				if(gulpJsonSrvInstance.options.debug){
 					console.log(chalk.green('reload with data:'));
 					console.log(JSON.stringify(appendedObject));
 				}
 
-				_.extend(aggregatorObject, appendedObject || {});
+				if(gulpJsonSrvInstance.options.cumulativeSession){
+					_.extend(aggregatorObject, appendedObject || {});
+				}
+				else{
+					aggregatorObject = appendedObject || {};
+					console.log(chalk.green("override DB data since cumulativeSession=false"));
+				}
 				
 				reload(aggregatorObject);
 

@@ -30,7 +30,19 @@ var pipeHelper = function(url, done, options){
     };
 
     this.pipeContent = function(content){
-        addAction(ActionName.PipeContent, content);
+        var contents = [];
+
+        if(content instanceof Array){
+            content.forEach(function(c) {
+                contents.push(c);
+            }, this);
+        }
+        else{
+            contents.push(content);
+        }
+
+        addAction(ActionName.PipeContent, contents);
+
         return this;
     };
 
@@ -42,11 +54,16 @@ var pipeHelper = function(url, done, options){
 
         switch(action.name){
             case ActionName.PipeContent:
-                server.pipe().write({
-                    isNull: function(){return false;},
-                    isStream: function(){return false;},
-                    contents: JSON.stringify(action.info)
-                });
+                var pipe = server.pipe();
+                var contents = action.info;
+
+                contents.forEach(function(c) {
+                    pipe.write({
+                        isNull: function(){return false;},
+                        isStream: function(){return false;},
+                        contents: JSON.stringify(c)
+                    });    
+                }, this); 
 
                 chainedRun(server, url, actions, currentIndex + 1, done);
 
