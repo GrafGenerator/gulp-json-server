@@ -11,8 +11,6 @@ var dbSample = {
 };
 
 var db = dbSample;
-var dbJsonPost1 = { id: 1, title: "json-server", author: "typicode" };
-var dbJsonPost1Changed = { id: 1, title: "gulp-json-srv", author: "grafgenerator" };
 
 var routes = {
 	'/api/': '/',

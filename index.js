@@ -2,34 +2,34 @@
 
 var _ = require('lodash');
 var jsonServer = require('json-server');
-var utils = require('gulp-util');
-var fs = require('fs');
 var through = require('through2');
+var utils = require('gulp-util');
+var chalk = require('chalk');
 var bodyParser = require('body-parser');
+var enableDestroy = require('server-destroy');
 
-var GulpJsonServer = function(options, legacyMode){
+var GulpJsonServer = function(options){
 	this.server = null;
 	this.instance = null;
 	this.router = null;
 	this.serverStarted = false;
 
 	this.options = {
-		data: 'db.json',
 		port: 3000,
 		rewriteRules: null,
 		customRoutes: null,
 		baseUrl: null,
 		id: 'id',
-		deferredStart: false,
 		static: null,
 		cumulative: false
 	};
-	_.assign(this.options, options || {});
+	
+	_.extend(this.options, options || {});
 
 	
-	var start = function (overrideData) {
+	var start = function (data) {
 		if(this.serverStarted){
-			utils.log('JSON server already started');
+			console.log(chalk.yellow('JSON server already started'));
 			return this.instance;
 		}
 
@@ -55,7 +55,7 @@ var GulpJsonServer = function(options, legacyMode){
 			}
 		}
 
-		var router = jsonServer.router(overrideData || this.options.data);
+		var router = jsonServer.router(data || this.options.data);
 		if(this.options.baseUrl) {
 			server.use(this.options.baseUrl, router);
 		}
@@ -70,68 +70,36 @@ var GulpJsonServer = function(options, legacyMode){
 		this.server = server;
 		this.router = router;
 		this.instance = server.listen(this.options.port);
+
+		enableDestroy(this.instance);
+
 		this.serverStarted = true;
 
 		return this.instance;
 	}.bind(this);
 
-	var ensureServerStarted = function(silent){
-		if(this.instance === null){
-			if(!silent){
-				throw 'JSON server not started';
-			}
-		}
-
-		return this.instance !== null;
-	}.bind(this);
-	
 	var reload = function(data){
-		var newDb = null;
-
 		if(typeof data === 'undefined'){
-			utils.log('nothing to reload, quit', utils.colors.green(data));
-		}
-		
-		if(typeof data === 'string'){
-			// attempt to reload file
-			utils.log('reload from file', utils.colors.yellow(data));
-			newDb = JSON.parse(fs.readFileSync(data));
-		}
-		else{
-			// passed new DB object, store it
-			utils.log('reload from object');
-			newDb = JSON.parse(JSON.stringify(data));
+			console.log(chalk.yellow('nothing to reload, quit'));
+			return;
 		}
 
-		if(newDb === null){
-			throw 'No valid data passed for reloading. You should pass either data file path or new DB in-memory object';
-		}
-
-		this.router.db.object = newDb;
-		utils.log(utils.colors.magenta('server reloaded'));
+		this.kill();
+		start(data);		
 	}.bind(this);
-	
+
+
+
 	this.kill = function(callback){
-		if(legacyMode){
-			ensureServerStarted(false);
-			this.instance.close(callback);
-		}
-		else{
-			var instanceExist = ensureServerStarted(true);
-			if(instanceExist){
-				this.instance.close(callback);
-			}
+		if(this.instance){
+			this.instance.destroy(callback);
+			this.serverStarted = false;
 		}
 	};
 	
-	
-	// ==== new impl ====
-	
 	this.pipe = function(options){
-		var aggregatorObject = this.serverStarted && this.options.cumulative 
-			? this.router.db.object || {} 
-			: {};
-		
+		// HACK json-server to get its db object if needed
+		var aggregatorObject = this.serverStarted && this.options.cumulative ? this.router.db.object || {} : {};
 		var gulpJsonSrvInstance = this;
 		
 		return through.obj(function (file, enc, cb) {
@@ -148,16 +116,13 @@ var GulpJsonServer = function(options, legacyMode){
 			try {
 				var appendedObject = JSON.parse(file.contents.toString());
 				if(gulpJsonSrvInstance.debug){
-					utils.log('reload with data', appendedObject);
+					console.log(chalk.green('reload with data:'));
+					console.log(JSON.stringify(appendedObject));
 				}
-				_.assign(aggregatorObject, appendedObject || {});
+
+				_.extend(aggregatorObject, appendedObject || {});
 				
-				if(!gulpJsonSrvInstance.serverStarted){
-					start(aggregatorObject);
-				}
-				else{
-					reload(aggregatorObject);
-				}
+				reload(aggregatorObject);
 
 				this.push(file);
 			} catch (err) {
@@ -167,52 +132,10 @@ var GulpJsonServer = function(options, legacyMode){
 			cb();
 		});
 	};
-	
-	
-	
-	// ==== legacy impl ====
-	if(legacyMode){
-		this.start = function(){
-			start();
-		};
-		
-		this.reload = function(data){
-			ensureServerStarted(false);
-
-			var isDataFile = typeof this.options.data === 'string';
-			var noData = typeof(data) === 'undefined';
-				
-			if(noData){
-				if(!isDataFile){
-					// serving in-memory DB, exit without changes
-					return;
-				}
-				
-				reload(this.options.data);
-			}
-			else{
-				reload(data);
-			}
-		};
-		
-		// maintain legacy behavior
-		if(!this.options.deferredStart){
-			this.start();
-		}
-	}
 };
-
-
-
-
 
 module.exports = {
 	create: function(options){
-		// create server, not start immediately 
-		return new GulpJsonServer(options, false);	
-	},
-	start: function(options){
-		// legacy implementation - create server and start immediately with specified options
-		return new GulpJsonServer(options, true);
-	}
+		return new GulpJsonServer(options);
+	}	
 };
