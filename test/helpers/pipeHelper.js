@@ -29,7 +29,7 @@ var pipeHelper = function(url, done, options){
         return this;
     };
 
-    this.pipeContent = function(content){
+    this.pipeContent = function(content, options){
         var contents = [];
 
         if(content instanceof Array){
@@ -41,7 +41,7 @@ var pipeHelper = function(url, done, options){
             contents.push(content);
         }
 
-        addAction(ActionName.PipeContent, contents);
+        addAction(ActionName.PipeContent, { contents, options });
 
         return this;
     };
@@ -54,8 +54,8 @@ var pipeHelper = function(url, done, options){
 
         switch(action.name){
             case ActionName.PipeContent:
-                var pipe = server.pipe();
-                var contents = action.info;
+                var pipe = server.pipe(action.info.options || {});
+                var contents = action.info.contents;
 
                 contents.forEach(function(c) {
                     pipe.write({

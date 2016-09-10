@@ -13,6 +13,7 @@ var GulpJsonServer = function(options){
 	this.instance = null;
 	this.router = null;
 	this.serverStarted = false;
+	this.devMode = true;
 
 	this.options = {
 		port: 3000,
@@ -28,6 +29,14 @@ var GulpJsonServer = function(options){
 	
 	_.extend(this.options, options || {});
 
+	var self = this;
+	this.customizer = function(objValue, srcValue) {
+		if (_.isArray(objValue)) {
+			var byIdComparison = objValue.length > 0 && objValue[0].hasOwnProperty(self.options.id);
+			console.log(chalk.red("comparison by identity: " + byIdComparison));
+			return byIdComparison ? _.uniqBy(srcValue.concat(objValue), function(x){ return x[self.options.id] }) : _.uniq(srcValue.concat(objValue));
+		}
+	};
 	
 	var start = function (data) {
 		if(this.serverStarted){
@@ -95,6 +104,8 @@ var GulpJsonServer = function(options){
 		}
 
 		if(this.options.debug){
+			console.log(chalk.green("reloading data:"));			
+			console.log(JSON.stringify(data));
 			console.log(chalk.yellow("destroying server..."));
 		}
 		var gulpJsonSrvInstance = this;
@@ -120,6 +131,13 @@ var GulpJsonServer = function(options){
 		var aggregatorObject = this.serverStarted && this.options.cumulative ? this.router.db.object || {} : {};
 		var gulpJsonSrvInstance = this;
 		
+		if(this.devMode){
+			console.log(chalk.red("server started: " + this.serverStarted));			
+			console.log(chalk.red("cumulative: " + this.options.cumulative));			
+			console.log(chalk.red("aggregator object:"));			
+			console.log(JSON.stringify(aggregatorObject));
+		}
+
 		return through.obj(function (file, enc, cb) {
 			if (file.isNull()) {
 				cb(null, file);
@@ -134,12 +152,12 @@ var GulpJsonServer = function(options){
 			try {
 				var appendedObject = JSON.parse(file.contents.toString());
 				if(gulpJsonSrvInstance.options.debug){
-					console.log(chalk.green('reload with data:'));
+					console.log(chalk.green('file data:'));
 					console.log(JSON.stringify(appendedObject));
 				}
 
 				if(gulpJsonSrvInstance.options.cumulativeSession){
-					_.extend(aggregatorObject, appendedObject || {});
+					_.mergeWith(aggregatorObject, appendedObject || {}, gulpJsonSrvInstance.customizer);
 					if(gulpJsonSrvInstance.options.debug){
 						console.log(chalk.green("combine DB data in session"));
 					}
@@ -149,6 +167,11 @@ var GulpJsonServer = function(options){
 					if(gulpJsonSrvInstance.options.debug){
 						console.log(chalk.green("override DB data in session (cumulativeSession=false)"));
 					}
+				}
+				
+				if(gulpJsonSrvInstance.devMode){
+					console.log(chalk.red("pipe reloading data:"));			
+					console.log(JSON.stringify(aggregatorObject));
 				}
 				
 				reload(aggregatorObject);
