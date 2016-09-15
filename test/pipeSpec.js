@@ -89,7 +89,6 @@ describe('#pipe()', function(){
 		var helper = new PipeHelper('http://localhost:3000', done, makeOptions({
 			cumulative: true
 		}));
-		var combinedDb = _.extend(makeCopy(dbBigger), makeCopy(dbLesser));
 
 		helper
 			.pipeContent(makeCopy(dbBigger))
@@ -113,11 +112,10 @@ describe('#pipe()', function(){
 		helper.go();
 	});
 
-	it('should combine input in one pipe session when cumulative input=true', function(done){
+	it('should combine input in one pipe session when cumulativeSession=true', function(done){
 		var helper = new PipeHelper('http://localhost:3000', done, makeOptions({
 			cumulativeSession: true
 		}));
-		var combinedDb = _.extend(makeCopy(dbBigger), makeCopy(dbLesser));
 
 		helper
 			.pipeContent([makeCopy(dbBigger), makeCopy(dbLesser)])
@@ -135,7 +133,7 @@ describe('#pipe()', function(){
 		helper.go();
 	});
 
-	it('should take last occurence of property in one pipe session when cumulative input=true', function(done){
+	it('should take last occurence of property in one pipe session when cumulativeSession=true', function(done){
 		var helper = new PipeHelper('http://localhost:3000', done, makeOptions({
 			cumulativeSession: true
 		}));
@@ -143,11 +141,6 @@ describe('#pipe()', function(){
 		
 		helper
 			.pipeContent([makeCopy(dbBigger), makeCopy({ posts: [ differentPost]})])
-			.request(function(req){
-				return req
-					.get('/posts/1')
-					.expect(200, makeCopy(post1));
-			})
 			.request(function(req){
 				return req
 					.get('/posts/1')

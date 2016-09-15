@@ -2,6 +2,7 @@
 
 var _ = require('lodash');
 var jsonServer = require('json-server');
+var Merger = require('./merger');
 var through = require('through2');
 var utils = require('gulp-util');
 var chalk = require('chalk');
@@ -29,15 +30,6 @@ var GulpJsonServer = function(options){
 	
 	_.extend(this.options, options || {});
 
-	var self = this;
-	this.customizer = function(objValue, srcValue) {
-		if (_.isArray(objValue)) {
-			var byIdComparison = objValue.length > 0 && objValue[0].hasOwnProperty(self.options.id);
-			console.log(chalk.red("comparison by identity: " + byIdComparison));
-			return byIdComparison ? _.uniqBy(srcValue.concat(objValue), function(x){ return x[self.options.id] }) : _.uniq(srcValue.concat(objValue));
-		}
-	};
-	
 	var start = function (data) {
 		if(this.serverStarted){
 			if(this.options.debug){
@@ -81,7 +73,12 @@ var GulpJsonServer = function(options){
 		}
 
 		if(this.options.id){
-			router.db._.id = this.options.id;
+			var newId = this.options.id;
+			router.db._.mixin({
+				__id: function(){
+					return newId;
+				}
+			});
 		}
 
 		this.server = server;
@@ -131,7 +128,7 @@ var GulpJsonServer = function(options){
 		var isCumulativeSession = typeof(options.cumulativeSession) != "undefined" ? options.cumulativeSession : this.options.cumulativeSession;
 
 		// HACK json-server to get its db object if needed
-		var aggregatorObject = this.serverStarted && isCumulative ? this.router.db.object || {} : {};
+		var aggregatorObject = this.serverStarted && isCumulative ? this.router.db.getState() || {} : {};
 		var gulpJsonSrvInstance = this;
 		
 		if(this.devMode){
@@ -160,7 +157,7 @@ var GulpJsonServer = function(options){
 				}
 
 				if(isCumulativeSession){
-					_.mergeWith(aggregatorObject, appendedObject || {}, gulpJsonSrvInstance.customizer);
+					aggregatorObject = new Merger(gulpJsonSrvInstance.options).merge(aggregatorObject, appendedObject || {});
 					if(gulpJsonSrvInstance.options.debug){
 						console.log(chalk.green("combine DB data in session"));
 					}
