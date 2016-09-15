@@ -11,7 +11,7 @@ gulp.task('jshint', function(){
 });
 
 gulp.task('test', function(){
-	return gulp.src('test/pipeSpec.js', {read: false})
+	return gulp.src('test/*.js', {read: false})
 		.pipe(gulpMocha({reporter: 'spec'}));
 });
 
