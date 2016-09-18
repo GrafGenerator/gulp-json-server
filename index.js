@@ -28,6 +28,8 @@ var GulpJsonServer = function(options){
 		debug: false
 	};
 	
+	var self = this;
+
 	_.extend(this.options, options || {});
 
 	var start = function (data) {
@@ -124,12 +126,11 @@ var GulpJsonServer = function(options){
 	};
 	
 	this.pipe = function(options){
-		var isCumulative = typeof(options.cumulative) != "undefined" ? options.cumulative : this.options.cumulative;
-		var isCumulativeSession = typeof(options.cumulativeSession) != "undefined" ? options.cumulativeSession : this.options.cumulativeSession;
+		var isCumulative = options && typeof(options.cumulative) !== "undefined" ? options.cumulative : self.options.cumulative;
+		var isCumulativeSession = options && typeof(options.cumulativeSession) !== "undefined" ? options.cumulativeSession : self.options.cumulativeSession;
 
 		// HACK json-server to get its db object if needed
-		var aggregatorObject = this.serverStarted && isCumulative ? this.router.db.getState() || {} : {};
-		var gulpJsonSrvInstance = this;
+		var aggregatorObject = self.serverStarted && isCumulative ? self.router.db.getState() || {} : {};
 		
 		if(this.devMode){
 			console.log(chalk.red("server started: " + this.serverStarted));			
@@ -151,25 +152,25 @@ var GulpJsonServer = function(options){
 
 			try {
 				var appendedObject = JSON.parse(file.contents.toString());
-				if(gulpJsonSrvInstance.options.debug){
+				if(self.options.debug){
 					console.log(chalk.green('file data:'));
 					console.log(JSON.stringify(appendedObject));
 				}
 
 				if(isCumulativeSession){
-					aggregatorObject = new Merger(gulpJsonSrvInstance.options).merge(aggregatorObject, appendedObject || {});
-					if(gulpJsonSrvInstance.options.debug){
+					aggregatorObject = new Merger(self.options).merge(aggregatorObject, appendedObject || {});
+					if(self.options.debug){
 						console.log(chalk.green("combine DB data in session"));
 					}
 				}
 				else{
 					aggregatorObject = appendedObject || {};
-					if(gulpJsonSrvInstance.options.debug){
+					if(self.options.debug){
 						console.log(chalk.green("override DB data in session (cumulativeSession=false)"));
 					}
 				}
 				
-				if(gulpJsonSrvInstance.devMode){
+				if(self.devMode){
 					console.log(chalk.red("pipe reloading data:"));			
 					console.log(JSON.stringify(aggregatorObject));
 				}

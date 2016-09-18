@@ -1,5 +1,12 @@
 ## Release notes
 
+### v1.0.0 - breaking changes
+* Whole plugin redesigned to meet the requirements of gulp plugin guidelines.
+* Added ability to pipe files to the plugin.
+* 'data' and 'deferredStart' removed.
+* 'debug', 'cumulative' and 'cumulativeSession' options added.
+* Plugin do not take objects as input anymore, start() and reload() methods removed, the only way to pass data to plugin is via pipeline.
+
 ### v0.2.0
 * Added ability to add rewrite rules to static files.
 * Added ability to use custom routes (reflect json-server changes)
