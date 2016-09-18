@@ -40,4 +40,4 @@ Basic version of plugin with ability to start json-server from specified file or
 
 ## License
 
-MIT © Nikita Ivanov (http://borodatik.net)
+MIT © 2016 Nikita Ivanov

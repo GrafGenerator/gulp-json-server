@@ -136,4 +136,4 @@ If omitted, do nothing in case of in-memory DB, and reload data from file, speci
 
 ## License
 
-MIT © Nikita Ivanov (http://borodatik.net)
+MIT © 2016 Nikita Ivanov
