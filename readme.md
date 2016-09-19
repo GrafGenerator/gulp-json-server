@@ -32,7 +32,7 @@ See [samples](SAMPLES.md) for more information about usage of plugin.
 ### Options
 
 | Options | Default value | Description |
-|:---|:---:|:---|
+|:---|:---|:---|
 |`baseUrl`|`null`|The base URL for server API.|
 |`cumulative`|`false`|Controls when to merge files from different `pipe()` calls (i.e. two pipelines execution.)|
 |`cumulativeSession`|`true`|Controls when to merge files in one `pipe()` call (i.e. one pipeline execution.). If not, then only last file passed to plugin will form the DB state.|
