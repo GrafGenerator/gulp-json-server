@@ -1,7 +1,8 @@
-# gulp-json-server [![Build Status](https://travis-ci.org/GrafGenerator/gulp-json-server.svg?branch=master)](https://travis-ci.org/GrafGenerator/gulp-json-server)
+# gulp-json-server [![Build Status](https://travis-ci.org/GrafGenerator/gulp-json-server.svg?branch=master)](https://travis-ci.org/GrafGenerator/gulp-json-server) [![npm version](https://badge.fury.io/js/gulp-json-srv.svg)](https://badge.fury.io/js/gulp-json-srv)
 
 Wrapper for [json-server](https://github.com/typicode/json-server).
 
+**Important!** Version 1.0.0 released and contains breaking changes, see this page for new API, and [examples of usage](SAMPLES.md).
 
 ## Install
 
@@ -11,122 +12,44 @@ $ npm install --save-dev gulp-json-srv
 
 
 ## Usage
-### Server with default parameters
 ```js
-var gulp = require('gulp');
-var jsonServer = require('gulp-json-srv');
+var gulp = require("gulp");
+var jsonServer = require("gulp-json-srv");
 
-gulp.task('default', function () {
-	jsonServer.start(); // start serving 'db.json' on port 3000
+var server = jsonServer.create();
+
+gulp.task("start", function(){
+    return gulp.src("data.json")
+        .pipe(server.pipe());
 });
 ```
 
-### Server with custom parameters
-```js
-var gulp = require('gulp');
-var jsonServer = require('gulp-json-srv');
-
-gulp.task('default', function () {
-	jsonServer.start({
-		data: 'some-else-data-file.json',
-		port: 25000
-	});
-});
-```
-
-See [samples](SAMPLES.MD) for more information about usage of plugin.
+See [samples](SAMPLES.md) for more information about usage of plugin.
 
 
-## jsonServer API
+## API
 
-### start(options)
-Creates new server with specified options and immediately starts it until `deferredStart` option specified.<br/>
+### Options
 
-#### Returns
-Returns a wrapper object for the server (see it's API below).
+| Options | Default value | Description |
+|:---|:---|:---|
+|`baseUrl`|`null`|The base URL for server API.|
+|`cumulative`|`false`|Controls when to merge files from different `pipe()` calls (i.e. two pipelines execution.)|
+|`cumulativeSession`|`true`|Controls when to merge files in one `pipe()` call (i.e. one pipeline execution.). If not, then only last file passed to plugin will form the DB state.|
+|`customRoutes`|`null`|A key-value pairs of custom routes that should be applied to server. Each value should be the object with `method` and `handler` properties, describing HTTP method and handler of custom route respectively.|
+|`debug`|`false`|If true, produces extra output in console, useful for debug.|
+|`id`|`"id"`|Identity property name of objects. Changing this allows to imitate MongoDB's `_id` f.e.|
+|`port`|`3000`|Port number on which json-server will listen.|
+|`rewriteRules`|`null`|A key-value pairs of rewrite rules that should be applied to server.|
+|`static`|`null`|If specified and not null, sets the static files folder and lets json-server serve static files from that folder.|
 
-#### Options
+**Important:** Note that `cumulative` and `cumulativeSession` options could be specified in `options` object, passed to `pipe()` method and they will override one set at server level.
 
-##### data
-
-Type: `string` or `object`<br/>
-Default: `'db.json'`
-
-Input source for server's DB. May be either a path to the file or in-memory object.
-
-##### port
-
-Type: `integer`<br/>
-Default: `3000`
-
-Port number on which json-server will listen.
-
-##### baseUrl
-
-Type: `string`<br/>
-Default: `null`
-
-The base URL for REST API.
-
-##### rewriteRules
-
-Type: `object`<br/>
-Default: `null`
-
-A key-value pairs of rewrite rules that should be applied to server.
-
-##### customRoutes
-
-Type: `object`<br/>
-Default: `null`
-
-A key-value pairs of custom routes that should be applied to server.
-
-##### id
-
-Type: `string`<br/>
-Default: `id`
-
-`id` key used to match objects in collections. Usually `id`, but for example MongoDB use `_id`.
-
-##### deferredStart
-
-Type: `bool`<br/>
-Default: `false`
-
-Used to specify that server object should be created, but not started, assuming manual start later.
-
-##### static
-
-Type: `string`<br/>
-Default: `null`
-
-If specified and not null, sets the static files folder and lets json-server serve static files from that folder. 
-
-
-## Server wrapper object API
-
-### start()
-Manually starts server in case of deferred start. Has no effect in case server is already running.
-
-### kill()
-Stops the server.
-
-### reload(data)
-Reloads server DB with new data. The data can be object or data file path, or can be omitted.
-
-#### Options
-
-##### data
-
-Type: `string` or `object`<br/>
-Default: `undefined`
-
-Input source for new DB's content. May be either a path to the file or in-memory object.
-
-If path to file, or object is passed, reloads DB with new data, no matter if serving file or in-memory DB.
-If omitted, do nothing in case of in-memory DB, and reload data from file, specified by server options in case of serving the file.
-
+### Methods
+| Method | Description |
+|---|---|
+|`kill(callback)`|Immediately stops the server and closes all opened connections. If `callback` is provided, it will be called once server stopped.|
+|`pipe(options)`|Provides stream trasformation for gulp pipeline. Passing `'options'` to this method allows to override options, set at server level (currently `cumulative` and `cumulativeSession` are overridable). |
 
 ## Links
 
@@ -136,4 +59,4 @@ If omitted, do nothing in case of in-memory DB, and reload data from file, speci
 
 ## License
 
-MIT © Nikita Ivanov (http://borodatik.net)
+MIT © 2016 Nikita Ivanov
