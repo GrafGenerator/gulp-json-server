@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var chalk = require('chalk');
-var PipeHelper = require('./helpers/pipeHelper');
+var PipeHelper = require('./pipeHelper');
 
 
 /* ===== sample data ===== */

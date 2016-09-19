@@ -1,6 +1,6 @@
 'use strict';
 
-var jsonServer = require('../../');
+var jsonServer = require('../.');
 var request = require('supertest');
 
 var pipeHelper = function(url, done, options){
