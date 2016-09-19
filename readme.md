@@ -53,9 +53,9 @@ See [samples](SAMPLES.md) for more information about usage of plugin.
 
 ## Links
 
-* [SAMPLES.MD](SAMPLES.md) - more examples of usage
-* [CHANGELOG.MD](CHANGELOG.md)
-* [CONTRIBUTING.MD](CONTRIBUTING.md) - info for contributors
+* [SAMPLES.md](SAMPLES.md) - more examples of usage
+* [CHANGELOG.md](CHANGELOG.md)
+* [CONTRIBUTING.md](CONTRIBUTING.md) - info for contributors
 
 ## License
 
