@@ -14,7 +14,7 @@ var GulpJsonServer = function(options){
 	this.instance = null;
 	this.router = null;
 	this.serverStarted = false;
-	this.devMode = true;
+	this.devMode = false;
 
 	this.options = {
 		port: 3000,

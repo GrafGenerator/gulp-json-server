@@ -1,5 +1,5 @@
 ## Usage
-### Server with default parameters
+### Server with default options
 ```js
 var gulp = require("gulp");
 var jsonServer = require("gulp-json-srv");
@@ -12,7 +12,7 @@ gulp.task("start", function(){
 });
 ```
 
-### Server with custom parameters
+### Server with custom options
 ```js
 var gulp = require("gulp");
 var jsonServer = require("gulp-json-srv");
