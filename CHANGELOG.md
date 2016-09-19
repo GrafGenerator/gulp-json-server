@@ -1,5 +1,8 @@
 ## Release notes
 
+### v1.0.1 - breaking changes
+* Fixing issue with missing files in the npm package.
+
 ### v1.0.0 - breaking changes
 * Whole plugin redesigned to meet the requirements of gulp plugin guidelines.
 * Added ability to pipe files to the plugin.
