@@ -42,6 +42,7 @@ See [samples](SAMPLES.md) for more information about usage of plugin.
 |`port`|`3000`|Port number on which json-server will listen.|
 |`rewriteRules`|`null`|A key-value pairs of rewrite rules that should be applied to server.|
 |`static`|`null`|If specified and not null, sets the static files folder and lets json-server serve static files from that folder.|
+|`quiet`|`false`|If true, Suppress json-server log messages from output.|
 
 **Important:** Note that `cumulative` and `cumulativeSession` options could be specified in `options` object, passed to `pipe()` method and they will override one set at server level.
 

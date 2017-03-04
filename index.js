@@ -25,9 +25,10 @@ var GulpJsonServer = function(options){
 		static: null,
 		cumulative: false,
 		cumulativeSession: true,
-		debug: false
+		debug: false,
+		quiet: false
 	};
-	
+
 	var self = this;
 
 	_.extend(this.options, options || {});
@@ -45,7 +46,7 @@ var GulpJsonServer = function(options){
 		}
 
         var server = jsonServer.create();
-        
+
 		server.use(bodyParser.json());
 		server.use(bodyParser.urlencoded({ extended: true }));
 
@@ -53,11 +54,17 @@ var GulpJsonServer = function(options){
 			server.use(jsonServer.rewriter(this.options.rewriteRules));
 		}
 
-		if (this.options.static) {
-			server.use(jsonServer.defaults({static: this.options.static}));
-		} else {
-			server.use(jsonServer.defaults());
+		var defaultsOpts = { };
+
+		if (this.options.quiet) {
+			defaultsOpts.logger = !this.options.quiet;
 		}
+
+		if (this.options.static) {
+			defaultsOpts.static = this.options.static;
+		}
+
+		server.use(jsonServer.defaults(defaultsOpts));
 
 		if(this.options.customRoutes){
 			for(var path in this.options.customRoutes) {
@@ -103,7 +110,7 @@ var GulpJsonServer = function(options){
 		}
 
 		if(this.options.debug){
-			console.log(chalk.green("reloading data:"));			
+			console.log(chalk.green("reloading data:"));
 			console.log(JSON.stringify(data));
 			console.log(chalk.yellow("destroying server..."));
 		}
@@ -124,18 +131,18 @@ var GulpJsonServer = function(options){
 			this.serverStarted = false;
 		}
 	};
-	
+
 	this.pipe = function(options){
 		var isCumulative = options && typeof(options.cumulative) !== "undefined" ? options.cumulative : self.options.cumulative;
 		var isCumulativeSession = options && typeof(options.cumulativeSession) !== "undefined" ? options.cumulativeSession : self.options.cumulativeSession;
 
 		// HACK json-server to get its db object if needed
 		var aggregatorObject = self.serverStarted && isCumulative ? self.router.db.getState() || {} : {};
-		
+
 		if(this.devMode){
-			console.log(chalk.red("server started: " + this.serverStarted));			
-			console.log(chalk.red("cumulative: " + this.options.cumulative));			
-			console.log(chalk.red("aggregator object:"));			
+			console.log(chalk.red("server started: " + this.serverStarted));
+			console.log(chalk.red("cumulative: " + this.options.cumulative));
+			console.log(chalk.red("aggregator object:"));
 			console.log(JSON.stringify(aggregatorObject));
 		}
 
@@ -169,12 +176,12 @@ var GulpJsonServer = function(options){
 						console.log(chalk.green("override DB data in session (cumulativeSession=false)"));
 					}
 				}
-				
+
 				if(self.devMode){
-					console.log(chalk.red("pipe reloading data:"));			
+					console.log(chalk.red("pipe reloading data:"));
 					console.log(JSON.stringify(aggregatorObject));
 				}
-				
+
 				reload(aggregatorObject);
 
 				this.push(file);
@@ -190,5 +197,5 @@ var GulpJsonServer = function(options){
 module.exports = {
 	create: function(options){
 		return new GulpJsonServer(options);
-	}	
+	}
 };

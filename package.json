@@ -1,6 +1,6 @@
 {
   "name": "gulp-json-srv",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Wrapper for json-server for easy launching with Gulp",
   "license": "MIT",
   "repository": "https://github.com/GrafGenerator/gulp-json-server.git",
@@ -8,6 +8,9 @@
     "name": "Nikita Ivanov",
     "email": "grafgenerator@gmail.com"
   },
+  "contributors": [
+    "Raul Dinegri <dinegri@gmail.com>"
+  ],
   "engines": {
     "node": ">=0.10.0"
   },
