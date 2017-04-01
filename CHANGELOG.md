@@ -1,5 +1,8 @@
 ## Release notes
 
+### v1.0.2 - add option from json-server
+* Added 'quiet' option to supress json-server log message from output.
+
 ### v1.0.1 - breaking changes
 * Fixing issue with missing files in the npm package.
 
