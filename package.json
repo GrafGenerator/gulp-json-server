@@ -58,6 +58,7 @@
     "gulp-jshint": "^1.11.0",
     "gulp-mocha": "^2.1.2",
     "jshint-stylish": "^2.0.1",
+    "mocha": "^3.4.2",
     "supertest": "^1.0.1"
   }
 }
