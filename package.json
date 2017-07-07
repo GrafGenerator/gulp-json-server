@@ -20,7 +20,7 @@
   },
   "scripts": {
     "jshint": "gulp jshint",
-    "test": "gulp test"
+    "test": "./node_modules/.bin/mocha --compilers js:babel-core/register test/*Spec.js"
   },
   "files": [
     "index.js",
@@ -53,6 +53,7 @@
     "through2": "^2.0.1"
   },
   "devDependencies": {
+    "babel-core": "^6.25.0",
     "gulp": "^3.9.0",
     "gulp-jshint": "^1.11.0",
     "gulp-mocha": "^2.1.2",
