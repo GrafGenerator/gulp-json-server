@@ -1,5 +1,9 @@
 ## Release notes
 
+### v1.1.0 - rework logging
+* Added 'verbosity' option to control overall log level and json-server's messages about accessed routes.
+* Removed 'debug' option.
+
 ### v1.0.1 - breaking changes
 * Fixing issue with missing files in the npm package.
 

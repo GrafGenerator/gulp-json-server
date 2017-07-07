@@ -2,7 +2,7 @@
 
 Wrapper for [json-server](https://github.com/typicode/json-server).
 
-**Important!** Version 1.0.0 released and contains breaking changes, see this page for new API, and [examples of usage](SAMPLES.md).
+**Important!** API versions >1.0.0 are incompatible with ones <1.0.0, see this page for new API, and [examples of usage](SAMPLES.md).
 
 ## Install
 
@@ -37,11 +37,11 @@ See [samples](SAMPLES.md) for more information about usage of plugin.
 |`cumulative`|`false`|Controls when to merge files from different `pipe()` calls (i.e. two pipelines execution.)|
 |`cumulativeSession`|`true`|Controls when to merge files in one `pipe()` call (i.e. one pipeline execution.). If not, then only last file passed to plugin will form the DB state.|
 |`customRoutes`|`null`|A key-value pairs of custom routes that should be applied to server. Each value should be the object with `method` and `handler` properties, describing HTTP method and handler of custom route respectively.|
-|`debug`|`false`|If true, produces extra output in console, useful for debug.|
 |`id`|`"id"`|Identity property name of objects. Changing this allows to imitate MongoDB's `_id` f.e.|
 |`port`|`3000`|Port number on which json-server will listen.|
 |`rewriteRules`|`null`|A key-value pairs of rewrite rules that should be applied to server.|
 |`static`|`null`|If specified and not null, sets the static files folder and lets json-server serve static files from that folder.|
+|`verbosity`|`{`<br/>&nbsp;&nbsp;&nbsp;&nbsp;`level:"error",`<br/>&nbsp;&nbsp;&nbsp;&nbsp;`urlTracing:true`<br/>`}`|Should be either `string` or `object`. In case value is object, specifies log `level` (see [loglevel](https://www.npmjs.com/package/loglevel) for details), and `urlTracing` flag, which allows to control messages about accessed routes. In case value is string, specifies only log level, and urlTracing is considered to be `true`.|
 
 **Important:** Note that `cumulative` and `cumulativeSession` options could be specified in `options` object, passed to `pipe()` method and they will override one set at server level.
 
