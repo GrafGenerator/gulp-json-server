@@ -35,7 +35,11 @@ var server = jsonServer.create({
 	},
 	static: './static',
 	cumulative: true,
-	cumulativeSession: false 
+	cumulativeSession: false,
+	verbosity: {
+		level: "debug",
+		urlTracing: false
+	}
 });
 
 gulp.task("start", function(){

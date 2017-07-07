@@ -5,6 +5,7 @@ var jsonServer = require('json-server');
 var Merger = require('./merger');
 var through = require('through2');
 var utils = require('gulp-util');
+var log = require('loglevel');
 var chalk = require('chalk');
 var bodyParser = require('body-parser');
 var enableDestroy = require('server-destroy');
@@ -14,7 +15,6 @@ var GulpJsonServer = function(options){
 	this.instance = null;
 	this.router = null;
 	this.serverStarted = false;
-	this.devMode = false;
 
 	this.options = {
 		port: 3000,
@@ -25,27 +25,40 @@ var GulpJsonServer = function(options){
 		static: null,
 		cumulative: false,
 		cumulativeSession: true,
-		debug: false,
-		quiet: false
+		verbosity: {
+			level: "error",
+			urlTracing: true
+		}
 	};
 
 	var self = this;
 
-	_.extend(this.options, options || {});
+	var prepareOptions = function(inputOptions){
+		_.merge(this.options, inputOptions || {});
+
+		if(typeof this.options.verbosity === "string"){
+			var verbosityLevel = this.options.verbosity;
+
+			this.options.verbosity = {
+				level: verbosityLevel,
+				urlTracing: true
+			}
+		}
+
+		log.setLevel(this.options.verbosity.level);
+	}.bind(this);
+
+	prepareOptions(options);
 
 	var start = function (data) {
 		if(this.serverStarted){
-			if(this.options.debug){
-				console.log(chalk.yellow('JSON server already started'));
-			}
+			log.debug(chalk.yellow('server already started'));
 			return this.instance;
 		}
 
-		if(this.options.debug){
-			console.log(chalk.green("starting server"));
-		}
+		log.info(chalk.green("starting server"));
 
-        var server = jsonServer.create();
+		var server = jsonServer.create();
 
 		server.use(bodyParser.json());
 		server.use(bodyParser.urlencoded({ extended: true }));
@@ -56,8 +69,8 @@ var GulpJsonServer = function(options){
 
 		var defaultsOpts = { };
 
-		if (this.options.quiet) {
-			defaultsOpts.logger = !this.options.quiet;
+		if (!this.options.verbosity.urlTracing) {
+			defaultsOpts.logger = false;
 		}
 
 		if (this.options.static) {
@@ -103,22 +116,18 @@ var GulpJsonServer = function(options){
 
 	var reload = function(data){
 		if(typeof data === 'undefined'){
-			if(this.options.debug){
-				console.log(chalk.yellow('nothing to reload, quit'));
-			}
+			log.debug(chalk.yellow('nothing to reload, quit'));
 			return;
 		}
 
 		if(this.options.debug){
-			console.log(chalk.green("reloading data:"));
-			console.log(JSON.stringify(data));
-			console.log(chalk.yellow("destroying server..."));
+			log.debug(chalk.green("reloading data:"));
+			log.debug(JSON.stringify(data));
+			log.debug(chalk.yellow("destroying server..."));
 		}
-		var gulpJsonSrvInstance = this;
+
 		this.kill(function(){
-			if(gulpJsonSrvInstance.options.debug){
-				console.log(chalk.yellow("server destroyed"));
-			}
+			log.debug(chalk.yellow("server destroyed"));
 		});
 		start(data);
 	}.bind(this);
@@ -139,12 +148,10 @@ var GulpJsonServer = function(options){
 		// HACK json-server to get its db object if needed
 		var aggregatorObject = self.serverStarted && isCumulative ? self.router.db.getState() || {} : {};
 
-		if(this.devMode){
-			console.log(chalk.red("server started: " + this.serverStarted));
-			console.log(chalk.red("cumulative: " + this.options.cumulative));
-			console.log(chalk.red("aggregator object:"));
-			console.log(JSON.stringify(aggregatorObject));
-		}
+		log.trace(chalk.red("server started: " + this.serverStarted));
+		log.trace(chalk.red("cumulative: " + this.options.cumulative));
+		log.trace(chalk.red("aggregator object:"));
+		log.trace(JSON.stringify(aggregatorObject));
 
 		return through.obj(function (file, enc, cb) {
 			if (file.isNull()) {
@@ -159,28 +166,20 @@ var GulpJsonServer = function(options){
 
 			try {
 				var appendedObject = JSON.parse(file.contents.toString());
-				if(self.options.debug){
-					console.log(chalk.green('file data:'));
-					console.log(JSON.stringify(appendedObject));
-				}
+				log.debug(chalk.green('file data:'));
+				log.debug(JSON.stringify(appendedObject));
 
 				if(isCumulativeSession){
 					aggregatorObject = new Merger(self.options).merge(aggregatorObject, appendedObject || {});
-					if(self.options.debug){
-						console.log(chalk.green("combine DB data in session"));
-					}
+					log.debug(chalk.green("combine DB data in session"));
 				}
 				else{
 					aggregatorObject = appendedObject || {};
-					if(self.options.debug){
-						console.log(chalk.green("override DB data in session (cumulativeSession=false)"));
-					}
+					log.debug(chalk.green("override DB data in session (cumulativeSession=false)"));
 				}
 
-				if(self.devMode){
-					console.log(chalk.red("pipe reloading data:"));
-					console.log(JSON.stringify(aggregatorObject));
-				}
+				log.trace(chalk.red("pipe reloading data:"));
+				log.trace(JSON.stringify(aggregatorObject));
 
 				reload(aggregatorObject);
 
