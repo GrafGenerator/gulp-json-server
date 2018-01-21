@@ -34,6 +34,7 @@ See [samples](SAMPLES.md) for more information about usage of plugin.
 | Options | Default value | Description |
 |:---|:---|:---|
 |`baseUrl`|`null`|The base URL for server API.|
+|`bodyParser.json`|`{limit: '10mb', expanded: false}`|Allows override of default bodyParser options
 |`cumulative`|`false`|Controls when to merge files from different `pipe()` calls (i.e. two pipelines execution.)|
 |`cumulativeSession`|`true`|Controls when to merge files in one `pipe()` call (i.e. one pipeline execution.). If not, then only last file passed to plugin will form the DB state.|
 |`customRoutes`|`null`|A key-value pairs of custom routes that should be applied to server. Each value should be the object with `method` and `handler` properties, describing HTTP method and handler of custom route respectively.|
