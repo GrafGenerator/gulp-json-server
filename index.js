@@ -10,7 +10,7 @@ var chalk = require('chalk');
 var bodyParser = require('body-parser');
 var enableDestroy = require('server-destroy');
 
-var GulpJsonServer = function (options) {
+var GulpJsonServer = function(options){
 	this.server = null;
 	this.instance = null;
 	this.router = null;
@@ -39,10 +39,10 @@ var GulpJsonServer = function (options) {
 
 	var self = this;
 
-	var prepareOptions = function (inputOptions) {
+	var prepareOptions = function(inputOptions){
 		_.merge(this.options, inputOptions || {});
 
-		if (typeof this.options.verbosity === "string") {
+		if(typeof this.options.verbosity === "string"){
 			var verbosityLevel = this.options.verbosity;
 
 			this.options.verbosity = {
@@ -57,7 +57,7 @@ var GulpJsonServer = function (options) {
 	prepareOptions(options);
 
 	var start = function (data) {
-		if (this.serverStarted) {
+		if(this.serverStarted){
 			log.debug(chalk.yellow('server already started'));
 			return this.instance;
 		}
@@ -69,11 +69,11 @@ var GulpJsonServer = function (options) {
 		server.use(bodyParser.json(this.options.bodyParser.json));
 		server.use(bodyParser.urlencoded({ extended: true }));
 
-		if (this.options.rewriteRules) {
+		if(this.options.rewriteRules){
 			server.use(jsonServer.rewriter(this.options.rewriteRules));
 		}
 
-		var defaultsOpts = {};
+		var defaultsOpts = { };
 
 		if (!this.options.verbosity.urlTracing) {
 			defaultsOpts.logger = false;
@@ -85,25 +85,25 @@ var GulpJsonServer = function (options) {
 
 		server.use(jsonServer.defaults(defaultsOpts));
 
-		if (this.options.customRoutes) {
-			for (var path in this.options.customRoutes) {
+		if(this.options.customRoutes){
+			for(var path in this.options.customRoutes) {
 				var customRoute = this.options.customRoutes[path];
 				server[customRoute.method.toLocaleLowerCase()](path, customRoute.handler);
 			}
 		}
 
 		var router = jsonServer.router(data || this.options.data);
-		if (this.options.baseUrl) {
+		if(this.options.baseUrl) {
 			server.use(this.options.baseUrl, router);
 		}
-		else {
+		else{
 			server.use(router);
 		}
 
-		if (this.options.id) {
+		if(this.options.id){
 			var newId = this.options.id;
 			router.db._.mixin({
-				__id: function () {
+				__id: function(){
 					return newId;
 				}
 			});
@@ -120,19 +120,19 @@ var GulpJsonServer = function (options) {
 		return this.instance;
 	}.bind(this);
 
-	var reload = function (data) {
-		if (typeof data === 'undefined') {
+	var reload = function(data){
+		if(typeof data === 'undefined'){
 			log.debug(chalk.yellow('nothing to reload, quit'));
 			return;
 		}
 
-		if (this.options.debug) {
+		if(this.options.debug){
 			log.debug(chalk.green("reloading data:"));
 			log.debug(JSON.stringify(data));
 			log.debug(chalk.yellow("destroying server..."));
 		}
 
-		this.kill(function () {
+		this.kill(function(){
 			log.debug(chalk.yellow("server destroyed"));
 		});
 		start(data);
@@ -140,16 +140,16 @@ var GulpJsonServer = function (options) {
 
 
 
-	this.kill = function (callback) {
-		if (this.instance) {
+	this.kill = function(callback){
+		if(this.instance){
 			this.instance.destroy(callback);
 			this.serverStarted = false;
 		}
 	};
 
-	this.pipe = function (options) {
-		var isCumulative = options && typeof (options.cumulative) !== "undefined" ? options.cumulative : self.options.cumulative;
-		var isCumulativeSession = options && typeof (options.cumulativeSession) !== "undefined" ? options.cumulativeSession : self.options.cumulativeSession;
+	this.pipe = function(options){
+		var isCumulative = options && typeof(options.cumulative) !== "undefined" ? options.cumulative : self.options.cumulative;
+		var isCumulativeSession = options && typeof(options.cumulativeSession) !== "undefined" ? options.cumulativeSession : self.options.cumulativeSession;
 
 		// HACK json-server to get its db object if needed
 		var aggregatorObject = self.serverStarted && isCumulative ? self.router.db.getState() || {} : {};
@@ -175,11 +175,11 @@ var GulpJsonServer = function (options) {
 				log.debug(chalk.green('file data:'));
 				log.debug(JSON.stringify(appendedObject));
 
-				if (isCumulativeSession) {
+				if(isCumulativeSession){
 					aggregatorObject = new Merger(self.options).merge(aggregatorObject, appendedObject || {});
 					log.debug(chalk.green("combine DB data in session"));
 				}
-				else {
+				else{
 					aggregatorObject = appendedObject || {};
 					log.debug(chalk.green("override DB data in session (cumulativeSession=false)"));
 				}
@@ -200,7 +200,7 @@ var GulpJsonServer = function (options) {
 };
 
 module.exports = {
-	create: function (options) {
+	create: function(options){
 		return new GulpJsonServer(options);
 	}
 };
