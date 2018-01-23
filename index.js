@@ -4,7 +4,7 @@ var _ = require('lodash');
 var jsonServer = require('json-server');
 var Merger = require('./merger');
 var through = require('through2');
-var utils = require('gulp-util');
+var PluginError = require('plugin-error');
 var log = require('loglevel');
 var chalk = require('chalk');
 var bodyParser = require('body-parser');
@@ -160,7 +160,7 @@ var GulpJsonServer = function(options){
 			}
 
 			if (file.isStream()) {
-				cb(new utils.PluginError('gulp-json-srv', 'Streaming not supported'));
+				cb(new PluginError('gulp-json-srv', 'Streaming not supported'));
 				return;
 			}
 
@@ -185,7 +185,7 @@ var GulpJsonServer = function(options){
 
 				this.push(file);
 			} catch (err) {
-				this.emit('error', new utils.PluginError('gulp-json-srv', err));
+				this.emit('error', new PluginError('gulp-json-srv', err));
 			}
 
 			cb();
