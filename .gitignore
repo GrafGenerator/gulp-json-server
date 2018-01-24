@@ -1,5 +1,6 @@
 node_modules
 db.json
 *.json
+package-lock.json
 !package.json
 !sample/*
