@@ -17,12 +17,6 @@ var GulpJsonServer = function(options){
 	this.serverStarted = false;
 
 	this.options = {
-		bodyParser: {
-			json: {
-				limit: '10mb',
-				extended: false
-			}
-		},
 		port: 3000,
 		rewriteRules: null,
 		customRoutes: null,
@@ -34,7 +28,8 @@ var GulpJsonServer = function(options){
 		verbosity: {
 			level: "error",
 			urlTracing: true
-		}
+		},
+		bodyParserJson: null
 	};
 
 	var self = this;
@@ -66,7 +61,7 @@ var GulpJsonServer = function(options){
 
 		var server = jsonServer.create();
 
-		server.use(bodyParser.json(this.options.bodyParser.json));
+		server.use(this.options.bodyParserJson || bodyParser.json());
 		server.use(bodyParser.urlencoded({ extended: true }));
 
 		if(this.options.rewriteRules){
